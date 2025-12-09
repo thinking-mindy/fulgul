@@ -2,171 +2,165 @@
 
 # 🔥 Fulgul: The Spark
 
-**A comprehensive security scanning and system hardening desktop application**
+![Fulgul: The Spark](https://via.placeholder.com/800x200/1a1a1a/ff6b35?text=Fulgul%3A+The+Spark)
 
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/yourusername/fulgul)
-[![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](https://github.com/yourusername/fulgul)
-[![Rust](https://img.shields.io/badge/rust-1.70+-orange.svg)](https://www.rust-lang.org/)
-[![TypeScript](https://img.shields.io/badge/typescript-5.5+-blue.svg)](https://www.typescriptlang.org/)
+### **A comprehensive, secure, and modern security scanning and system hardening desktop application**
 
-[Features](#-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Documentation](#-user-guide) • [Support](#-support)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=for-the-badge)](https://github.com/yourusername/fulgul)
+[![Version](https://img.shields.io/badge/Version-0.1.0-blue?style=for-the-badge)](https://github.com/yourusername/fulgul)
+[![License](https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)](https://github.com/yourusername/fulgul)
 
 ---
 
-![Fulgul Dashboard](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Fulgul+Dashboard)
-*Screenshot: Fulgul Security Dashboard*
+**Quick Links:** [✨ Features](#-features) • [🚀 Installation](#-installation) • [📖 User Guide](#-user-guide) • [🆘 Support](#-support)
+
+[📥 Download](#-installation) • [📚 Documentation](#-user-guide) • [🐛 Report Issues](https://github.com/yourusername/fulgul/issues) • [💬 Discussions](https://github.com/yourusername/fulgul/discussions)
 
 </div>
 
 ---
 
-## 📋 Table of Contents
-
-- [About](#-about)
-- [Features](#-features)
-- [Screenshots](#-screenshots)
-- [Installation](#-installation)
-- [Quick Start](#-quick-start)
-- [User Guide](#-user-guide)
-- [Configuration](#-configuration)
-- [Security & Privacy](#-security--privacy)
-- [Troubleshooting](#-troubleshooting)
-- [Contributing](#-contributing)
-- [Support](#-support)
-- [License](#-license)
-
----
-
-## 🎯 About
+## 🎯 What is Fulgul: The Spark?
 
 **Fulgul: The Spark** is a powerful, user-friendly desktop application designed to help you secure your system through vulnerability scanning, attack simulations, and automated hardening. Whether you're a security professional, system administrator, or privacy-conscious user, Fulgul provides the tools you need to protect your system.
 
-### Why Fulgul?
-
-- ✅ **Comprehensive Security Scanning** - Detect vulnerabilities before attackers do
-- ✅ **Automated Hardening** - 40+ security tasks with one-click fixes
-- ✅ **Interactive Learning** - Hands-on attack simulations to learn security
-- ✅ **Cross-Platform** - Works on Windows, macOS, and Linux
-- ✅ **Privacy-First** - All data stored locally, no cloud dependencies
-- ✅ **Modern UI** - Beautiful, intuitive interface built with Material-UI
-
----
-
-## ✨ Features
-
-### 🔍 Vulnerability Scanning
+### 🌟 Why Choose Fulgul: The Spark?
 
 <table>
 <tr>
 <td width="50%">
 
-**Local Machine Scan**
-- Detects outdated packages and security patches
-- Identifies misconfigured services
-- Checks file permissions and security settings
-- Analyzes open ports and network services
-- Scans for known vulnerabilities (CVE database)
+#### ⚡ **Performance**
+- Lightning-fast vulnerability scanning
+- Real-time security monitoring
+- Optimized for all platforms
+
+#### 🔒 **Security**
+- Local data storage only
+- No cloud dependencies
+- Privacy-first approach
 
 </td>
 <td width="50%">
 
-**Remote IP Scan**
-- Port scanning (1-500 ports)
-- Service detection and vulnerability matching
-- Real-time progress tracking
-- Safe scanning with rate limiting
-- Private network protection
+#### 📊 **Comprehensive**
+- 40+ hardening tasks
+- Multi-platform support
+- Interactive learning tools
+
+#### 🎮 **User-Friendly**
+- Modern, intuitive interface
+- One-click fixes
+- Step-by-step guides
 
 </td>
 </tr>
 </table>
 
-### 🛡️ System Hardening
-
-<div align="center">
-
-| Category | Tasks | Platform Support |
-|----------|-------|------------------|
-| 🔥 Firewall | 3 tasks | Windows, macOS, Linux |
-| 🔐 SSH/Security | 4 tasks | Linux, macOS |
-| 🔄 Updates | 3 tasks | All platforms |
-| 🔒 Encryption | 3 tasks | All platforms |
-| 👤 Access Control | 5 tasks | All platforms |
-| 🔑 Password Policy | 2 tasks | All platforms |
-| 🛠️ Services | 3 tasks | All platforms |
-| 📊 Logging | 2 tasks | All platforms |
-
-</div>
-
-**Key Features:**
-- ✅ **40+ Hardening Tasks** - Platform-specific recommendations
-- ✅ **One-Click Fixes** - Interactive terminal for command execution
-- ✅ **Manual Guides** - Step-by-step instructions when needed
-- ✅ **Impact Assessment** - Know what each fix does
-- ✅ **Time Estimates** - Plan your hardening session
-
-### 🎮 Attack Simulation Hub
-
-Learn security through hands-on practice with interactive attack scenarios:
-
-- 🎯 **Vulnerable Web Applications** (DVWA-style)
-- 🔓 **Weak SSH Credentials**
-- 📁 **SMB Guest Shares**
-- 🌐 **Vulnerable REST APIs**
-- ⚡ **Real-time Command Execution**
-- 🏁 **Flag Capture System**
-- 📈 **Progress Tracking & Scoring**
-
-### 📊 Security Dashboard
-
-<div align="center">
-
-```
-┌─────────────────────────────────────┐
-│  Security Score: 85/100             │
-│  Grade: Good ✓                      │
-│                                     │
-│  Vulnerabilities: 12                │
-│  Critical: 2  High: 4  Medium: 6    │
-│                                     │
-│  Last Scan: 2 hours ago             │
-│  Hardening Tasks: 8/40 completed    │
-└─────────────────────────────────────┘
-```
-
-</div>
-
-**Real-time Monitoring:**
-- 📊 Security score (0-100) with visual gauge
-- 🎯 Security grade (Excellent to Critical)
-- 📈 Vulnerability statistics
-- 📅 Scan history with timestamps
-- ✅ Remediation status tracking
-
-### 🔧 Advanced Features
-
-- **Fix Management** - Track and apply security fixes with status tracking
-- **Scan History** - Complete audit trail with export capabilities
-- **Interactive Terminal** - Real-time command execution with password support
-- **Export Options** - JSON, CSV, PDF export for reports
-- **Filter & Search** - Powerful filtering and search capabilities
-
 ---
 
-## 📸 Screenshots
+## ✨ Features
 
-<div align="center">
+### 🎨 **Complete Security Management Suite**
 
-| Dashboard | Vulnerability Scan | System Hardening |
-|-----------|-------------------|------------------|
-| ![Dashboard](https://via.placeholder.com/400x250/1a1a1a/ffffff?text=Dashboard) | ![Scan](https://via.placeholder.com/400x250/1a1a1a/ffffff?text=Scan) | ![Hardening](https://via.placeholder.com/400x250/1a1a1a/ffffff?text=Hardening) |
+<details>
+<summary><b>🔍 Vulnerability Scanning</b> - Click to expand</summary>
 
-| Attack Hub | Scan History | Vulnerabilities |
-|------------|--------------|-----------------|
-| ![Attacks](https://via.placeholder.com/400x250/1a1a1a/ffffff?text=Attack+Hub) | ![History](https://via.placeholder.com/400x250/1a1a1a/ffffff?text=History) | ![Vulns](https://via.placeholder.com/400x250/1a1a1a/ffffff?text=Vulnerabilities) |
+#### Local Machine Scan
+- 📦 **Package Detection**: Identifies outdated packages and security patches
+- 🔧 **Service Analysis**: Detects misconfigured services
+- 🔐 **Permission Checks**: Analyzes file permissions and security settings
+- 🌐 **Port Analysis**: Scans open ports and network services
+- 🗄️ **CVE Database**: Matches against known vulnerability database
 
-</div>
+#### Remote IP Scan
+- 🔍 **Port Scanning**: Comprehensive port scan (1-500 ports)
+- 🎯 **Service Detection**: Identifies running services
+- ⚡ **Real-time Progress**: Live scanning updates
+- 🛡️ **Safe Scanning**: Rate limiting and timeout protection
+- 🔒 **Private Network Protection**: Blocks unauthorized scanning
+
+</details>
+
+<details>
+<summary><b>🛡️ System Hardening</b> - Click to expand</summary>
+
+- 🔥 **Firewall Configuration**: Set up and configure firewalls (Windows, macOS, Linux)
+- 🔐 **SSH Security**: Harden SSH configurations and disable root login
+- 🔄 **Automatic Updates**: Configure automatic security patches
+- 🔒 **Encryption Setup**: Enable disk encryption (BitLocker, FileVault, LUKS)
+- 👤 **Access Control**: Configure UAC, Gatekeeper, AppArmor/SELinux
+- 🔑 **Password Policies**: Enforce strong password requirements
+- 🛠️ **Service Management**: Disable unnecessary services
+- 📊 **Logging & Monitoring**: Configure security event logging
+- 🚨 **Intrusion Detection**: Set up fail2ban and similar tools
+- ⚡ **One-Click Fixes**: Interactive terminal for automated fixes
+
+**40+ Hardening Tasks** across all platforms with platform-specific recommendations
+
+</details>
+
+<details>
+<summary><b>🎮 Attack Simulation Hub</b> - Click to expand</summary>
+
+- 🎯 **Vulnerable Web Applications**: DVWA-style scenarios for learning
+- 🔓 **Weak SSH Credentials**: Practice SSH security testing
+- 📁 **SMB Guest Shares**: Learn about network share vulnerabilities
+- 🌐 **Vulnerable REST APIs**: Practice API security testing
+- ⚡ **Real-time Command Execution**: Interactive terminal for attacks
+- 🏁 **Flag Capture System**: Gamified learning experience
+- 📈 **Progress Tracking**: Monitor your learning progress
+- 🎓 **Scoring System**: Track your performance
+
+</details>
+
+<details>
+<summary><b>📊 Security Dashboard</b> - Click to expand</summary>
+
+- 📊 **Security Score**: Visual gauge showing 0-100 security rating
+- 🎯 **Security Grade**: Excellent, Good, Moderate, Risky, or Critical
+- 📈 **Vulnerability Statistics**: Breakdown by severity
+- 📅 **Scan History**: Complete audit trail with timestamps
+- ✅ **Remediation Tracking**: Monitor fix application status
+- 📉 **Trend Analysis**: Track security improvements over time
+
+</details>
+
+<details>
+<summary><b>🔧 Fix Management</b> - Click to expand</summary>
+
+- ⚡ **Auto-Fixable Commands**: One-click application of security fixes
+- 📝 **Manual Step Guides**: Detailed instructions when needed
+- 🔄 **Status Tracking**: pending → in-progress → fixed/failed
+- 💻 **Interactive Terminal**: Real-time command execution
+- 🔑 **Password Support**: Secure sudo/admin password input
+- 📋 **Fix History**: Complete record of applied fixes
+
+</details>
+
+<details>
+<summary><b>📚 Scan History & Reports</b> - Click to expand</summary>
+
+- 📅 **Complete History**: All past scans with timestamps
+- 🔍 **Advanced Filtering**: Filter by date, score, status
+- 🔎 **Search Capabilities**: Find specific vulnerabilities
+- 📄 **Export Options**: JSON, CSV, PDF export
+- 📊 **Comparison Tools**: Compare scans over time
+- 📈 **Analytics**: Track security improvements
+
+</details>
+
+<details>
+<summary><b>⚙️ Auto-Response Settings</b> - Click to expand</summary>
+
+- 🔄 **Auto-Patch**: Automatically apply security patches
+- 🚨 **Auto-Quarantine**: Isolate suspicious processes
+- 📢 **Auto-Notify**: Get alerts for security events
+- ⏱️ **Configurable Delays**: Set patch and response delays
+- 🎯 **Threshold Management**: Customize severity thresholds
+
+</details>
 
 ---
 
@@ -185,7 +179,7 @@ Learn security through hands-on practice with interactive attack scenarios:
 ### Windows
 
 <details>
-<summary><b>Click to expand Windows installation instructions</b></summary>
+<summary><b>📥 Windows Installation - Click to expand</b></summary>
 
 #### Option 1: NSIS Installer (Recommended)
 
@@ -209,7 +203,7 @@ Learn security through hands-on practice with interactive attack scenarios:
 ### macOS
 
 <details>
-<summary><b>Click to expand macOS installation instructions</b></summary>
+<summary><b>🍎 macOS Installation - Click to expand</b></summary>
 
 #### For Intel Macs
 
@@ -243,7 +237,7 @@ xattr -cr /Applications/Fulgul.app
 ### Linux
 
 <details>
-<summary><b>Click to expand Linux installation instructions</b></summary>
+<summary><b>🐧 Linux Installation - Click to expand</b></summary>
 
 #### AppImage (Recommended - Portable)
 
@@ -303,10 +297,9 @@ paru -S fulgul
 
 ### 1️⃣ First Launch
 
+Launch the application from your system menu, desktop shortcut, or command line:
 ```bash
-# Launch the application
 fulgul  # Linux
-# Or use the desktop shortcut/Start menu
 ```
 
 ### 2️⃣ Run Your First Scan
@@ -334,10 +327,8 @@ fulgul  # Linux
 
 ### 🔍 Scanning Your System
 
-#### Local Machine Scan
-
 <details>
-<summary><b>Step-by-step guide</b></summary>
+<summary><b>Local Machine Scan - Step-by-step guide</b></summary>
 
 1. Navigate to **Scan Local** from the sidebar
 2. Click **"Start Scan"** button
@@ -353,10 +344,8 @@ fulgul  # Linux
 
 </details>
 
-#### Remote IP Scan
-
 <details>
-<summary><b>Step-by-step guide</b></summary>
+<summary><b>Remote IP Scan - Step-by-step guide</b></summary>
 
 1. Navigate to **Scan Remote** from the sidebar
 2. Enter the target IP address (e.g., `192.168.1.10`)
@@ -446,14 +435,6 @@ fulgul  # Linux
 
 ### 🔐 First-Time Security Audit
 
-```mermaid
-graph LR
-    A[Run Scan] --> B[Review Score]
-    B --> C[Apply Critical Fixes]
-    C --> D[Re-scan]
-    D --> E[Verify Improvements]
-```
-
 1. Run a **Local Machine Scan**
 2. Review the security score and vulnerabilities
 3. Go to **Harden Systems** and apply critical/high priority fixes
@@ -527,7 +508,7 @@ Configure automated responses to security threats:
 - ✅ All scan data is stored **locally** on your machine
 - ✅ **No data** is sent to external servers
 - ✅ **No telemetry** or tracking
-- ✅ **Open source** backend (Rust) for transparency
+- ✅ Complete privacy and data control
 
 ### Permissions
 
@@ -552,31 +533,22 @@ Some features require elevated permissions:
 
 ## 🐛 Troubleshooting
 
-### Application Won't Start
-
 <details>
-<summary><b>Windows</b></summary>
+<summary><b>Application Won't Start</b></summary>
 
+#### Windows
 - Check **Windows Event Viewer** for errors
 - Install **Visual C++ Redistributable**: [Download](https://aka.ms/vs/17/release/vc_redist.x64.exe)
 - Run as **administrator** if needed
 - Check **antivirus** isn't blocking the app
 
-</details>
-
-<details>
-<summary><b>macOS</b></summary>
-
+#### macOS
 - Right-click app → **Open** (first time)
 - Check **System Preferences → Security & Privacy**
 - Remove quarantine: `xattr -cr /Applications/Fulgul.app`
 - Check **Gatekeeper** settings
 
-</details>
-
-<details>
-<summary><b>Linux</b></summary>
-
+#### Linux
 - Check dependencies: `ldd fulgul` (for missing libraries)
 - Install missing dependencies based on error messages
 - Check file permissions: `chmod +x fulgul`
@@ -584,7 +556,8 @@ Some features require elevated permissions:
 
 </details>
 
-### Scan Fails or Hangs
+<details>
+<summary><b>Scan Fails or Hangs</b></summary>
 
 1. Check system resources (CPU, RAM)
 2. Ensure you have network connectivity (for remote scans)
@@ -592,7 +565,10 @@ Some features require elevated permissions:
 4. Try running as administrator/sudo
 5. Check application logs
 
-### Hardening Tasks Fail
+</details>
+
+<details>
+<summary><b>Hardening Tasks Fail</b></summary>
 
 1. Verify you have required permissions
 2. Check if the task is applicable to your OS version
@@ -600,46 +576,113 @@ Some features require elevated permissions:
 4. Try manual steps instead of auto-fix
 5. Ensure system is not in a restricted state
 
-### Terminal Commands Not Working
+</details>
+
+<details>
+<summary><b>Terminal Commands Not Working</b></summary>
 
 1. Verify the command syntax is correct for your OS
 2. Check if required tools are installed
 3. Ensure you're using the correct shell (bash on Linux/macOS, PowerShell on Windows)
 4. Review command output for specific errors
 
----
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how you can help:
-
-- 🐛 **Report bugs** via issue tracker
-- 💡 **Suggest features** through discussions
-- 📝 **Improve documentation**
-- 🔧 **Submit pull requests**
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+</details>
 
 ---
 
-## 📞 Support
+## 📝 Changelog
 
-### Getting Help
+> 📌 **Note**: This section tracks updates and improvements. See what's new in each version below.
 
-- 📚 **Documentation**: Check this README and deployment guides
-- 🐛 **Issues**: [Report bugs](https://github.com/yourusername/fulgul/issues)
-- 💬 **Discussions**: [Join the community](https://github.com/yourusername/fulgul/discussions)
-- 📧 **Email**: support@fulgul.example.com
+### 🎯 Version 0.1.0 (Current Release)
 
-### Reporting Issues
+<details>
+<summary><b>✨ New Features</b></summary>
 
-When reporting issues, please include:
+- 🔍 **Vulnerability Scanning**: Comprehensive local and remote scanning
+- 🛡️ **System Hardening**: 40+ platform-specific hardening tasks
+- 🎮 **Attack Simulation Hub**: Interactive learning scenarios
+- 📊 **Security Dashboard**: Real-time monitoring and scoring
+- 💻 **Interactive Terminal**: Real-time command execution with password support
+- 📚 **Scan History**: Complete audit trail with export capabilities
+- ⚙️ **Auto-Response**: Configurable automated security responses
 
+</details>
+
+<details>
+<summary><b>🔄 Platform Support</b></summary>
+
+| Platform | Status | Features |
+|----------|--------|----------|
+| **Windows** | ✅ Full Support | All features available |
+| **macOS** | ✅ Full Support | All features available |
+| **Linux** | ✅ Full Support | All features available |
+
+</details>
+
+<details>
+<summary><b>🎨 UI/UX Improvements</b></summary>
+
+- 🎨 Modern dark theme with cyber-security styling
+- 📱 Responsive design for all screen sizes
+- ⚡ Real-time progress indicators
+- 🎯 Intuitive navigation and filtering
+- 📊 Visual security score gauges
+- 🔍 Advanced search and filter capabilities
+
+</details>
+
+---
+
+## 🆘 Support
+
+<div align="center">
+
+### 🤝 **We're Here to Help!**
+
+<table>
+<tr>
+<td align="center" width="25%">
+
+#### 📧 **Email**
+
+[support@fulgul.example.com](mailto:support@fulgul.example.com)
+
+</td>
+<td align="center" width="25%">
+
+#### 🐛 **Report Issues**
+
+[GitHub Issues](https://github.com/yourusername/fulgul/issues)
+
+</td>
+<td align="center" width="25%">
+
+#### 💬 **Discussions**
+
+[GitHub Discussions](https://github.com/yourusername/fulgul/discussions)
+
+</td>
+<td align="center" width="25%">
+
+#### 📚 **Documentation**
+
+[User Guide](#-user-guide)
+
+</td>
+</tr>
+</table>
+
+### 📋 **When Reporting Issues**
+
+Please include:
 - Operating system and version
 - Fulgul version
 - Steps to reproduce
 - Error messages or screenshots
 - System logs (if applicable)
+
+</div>
 
 ---
 
@@ -668,31 +711,46 @@ This software is **proprietary**. All rights reserved.
 
 ## 🙏 Acknowledgments
 
-Built with amazing open-source technologies:
-
 <div align="center">
 
-| Technology | Purpose |
-|------------|---------|
-| [Tauri](https://tauri.app/) | Desktop app framework |
-| [Next.js](https://nextjs.org/) | React framework |
-| [Material-UI](https://mui.com/) | UI components |
-| [Rust](https://www.rust-lang.org/) | Systems programming |
+**Built with ❤️ by the Fulgul Team**
 
-</div>
+Powered by modern technologies including Tauri, Next.js, React, and Rust
 
 ---
 
-## 📚 Additional Resources
+### 🌟 **Fulgul: The Spark**
 
-- 🔒 **Security Best Practices**: See hardening task descriptions
-- 🗄️ **Vulnerability Database**: CVE information in scan results
-- 🎮 **Attack Scenarios**: Educational content in Attack Hub
-- 📖 **Deployment Guides**: See `DEPLOY_WINDOWS.md`, `DEPLOY_MACOS.md`
+<table>
+<tr>
+<td align="center">
+
+<a href="https://github.com/yourusername/fulgul">💻 GitHub</a>
+
+</td>
+<td align="center">
+
+<a href="https://github.com/yourusername/fulgul/issues">🐛 Issues</a>
+
+</td>
+<td align="center">
+
+<a href="https://github.com/yourusername/fulgul/discussions">💬 Discussions</a>
+
+</td>
+<td align="center">
+
+<a href="mailto:support@fulgul.example.com">📧 Email</a>
+
+</td>
+</tr>
+</table>
 
 ---
 
 <div align="center">
+
+**⭐ If you find this project useful, please consider giving it a star!**
 
 ### 🔥 Stay Secure! 🔒
 
@@ -700,6 +758,6 @@ Built with amazing open-source technologies:
 
 [⬆ Back to Top](#-fulgul-the-spark)
 
-Made with ❤️ by the Fulgul Team
+</div>
 
 </div>
