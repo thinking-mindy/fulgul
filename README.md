@@ -15,7 +15,7 @@
 
 **Quick Links:** [✨ Features](#-features) • [🚀 Installation](#-installation) • [📖 User Guide](#-user-guide) • [🆘 Support](#-support)
 
-[📥 Download](#-installation) • [📚 Documentation](#-user-guide) • [🐛 Report Issues](https://github.com/yourusername/fulgul/issues) • [💬 Discussions](https://github.com/yourusername/fulgul/discussions)
+[📥 Download](#-installation) • [📚 Documentation](#-user-guide) • [🐛 Report Issues](https://github.com/thinking-mindy/fulgul/issues) • [💬 Discussions](https://github.com/thinking-mindy/fulgul/discussions)
 
 </div>
 
@@ -243,7 +243,7 @@ xattr -cr /Applications/Fulgul.app
 
 ```bash
 # Download
-wget https://releases.example.com/fulgul_0.1.0_amd64.AppImage
+wget https://github.com/thinking-mindy/fulgul/releases/fulgul_0.1.0_amd64.AppImage
 
 # Make executable
 chmod +x fulgul_0.1.0_amd64.AppImage
@@ -256,7 +256,7 @@ chmod +x fulgul_0.1.0_amd64.AppImage
 
 ```bash
 # Download
-wget https://releases.example.com/fulgul_0.1.0_amd64.deb
+wget https://github.com/thinking-mindy/fulgul/releases/fulgul_0.1.0_amd64.deb
 
 # Install
 sudo dpkg -i fulgul_0.1.0_amd64.deb
@@ -270,7 +270,7 @@ fulgul
 
 ```bash
 # Download
-wget https://releases.example.com/fulgul_0.1.0.x86_64.rpm
+wget https://github.com/thinking-mindy/fulgul/releases/fulgul_0.1.0.x86_64.rpm
 
 # Install
 sudo rpm -i fulgul_0.1.0.x86_64.rpm
@@ -646,21 +646,21 @@ Some features require elevated permissions:
 
 #### 📧 **Email**
 
-[support@fulgul.example.com](mailto:support@fulgul.example.com)
+[thinkingmindszw@gmail.com](mailto:thinkingmindszw@gmail.com)
 
 </td>
 <td align="center" width="25%">
 
 #### 🐛 **Report Issues**
 
-[GitHub Issues](https://github.com/yourusername/fulgul/issues)
+[GitHub Issues](https://github.com/thinking-mindy/fulgul/issues)
 
 </td>
 <td align="center" width="25%">
 
 #### 💬 **Discussions**
 
-[GitHub Discussions](https://github.com/yourusername/fulgul/discussions)
+[GitHub Discussions](https://github.com/thinking-mindy/fulgul/discussions)
 
 </td>
 <td align="center" width="25%">
