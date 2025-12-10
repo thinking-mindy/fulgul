@@ -725,22 +725,22 @@ Powered by modern technologies including Tauri, Next.js, React, and Rust
 <tr>
 <td align="center">
 
-<a href="https://github.com/yourusername/fulgul">💻 GitHub</a>
+<a href="https://github.com/thinking-mindy/fulgul">💻 GitHub</a>
 
 </td>
 <td align="center">
 
-<a href="https://github.com/yourusername/fulgul/issues">🐛 Issues</a>
+<a href="https://github.com/thinking-mindy/fulgul/issues">🐛 Issues</a>
 
 </td>
 <td align="center">
 
-<a href="https://github.com/yourusername/fulgul/discussions">💬 Discussions</a>
+<a href="https://github.com/thinking-mindy/fulgul/discussions">💬 Discussions</a>
 
 </td>
 <td align="center">
 
-<a href="mailto:support@fulgul.example.com">📧 Email</a>
+<a href="mailto:thinkingmindszw@gmail.com@gmail.com">📧 Email</a>
 
 </td>
 </tr>
