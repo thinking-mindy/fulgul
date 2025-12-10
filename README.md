@@ -2,7 +2,7 @@
 
 # 🔥 Fulgul: The Spark
 
-![Fulgul: The Spark](https://via.placeholder.com/800x200/1a1a1a/ff6b35?text=Fulgul%3A+The+Spark)
+![Fulgul: The Spark](https://github.com/thinking-mindy/thinkingminds/blob/main/public%2Fimages%2Ffulgul-light.png)
 
 ### **A comprehensive, secure, and modern security scanning and system hardening desktop application**
 
