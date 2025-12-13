@@ -6,16 +6,16 @@
 
 ### **A comprehensive, secure, and modern security scanning and system hardening desktop application**
 
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=for-the-badge)](https://github.com/yourusername/fulgul)
-[![Version](https://img.shields.io/badge/Version-0.1.0-blue?style=for-the-badge)](https://github.com/yourusername/fulgul)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=for-the-badge)](https://github.com/thinking-mindy/fulgul)
+[![Version](https://img.shields.io/badge/Version-0.1.0-blue?style=for-the-badge)](https://github.com/thinking-mindy/fulgul)
 [![License](https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge)](LICENSE)
-[![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)](https://github.com/yourusername/fulgul)
+[![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)](https://github.com/thinking-mindy/fulgul)
 
 ---
 
 **Quick Links:** [🛡️ Defensive Hacking](#️-understanding-defensive-hacking) • [✨ Features](#-features) • [🚀 Installation](#-installation) • [📖 User Guide](#-user-guide) • [🆘 Support](#-support)
 
-[📥 Download](#-installation) • [📚 Documentation](#-user-guide) • [🐛 Report Issues](https://github.com/yourusername/fulgul/issues) • [💬 Discussions](https://github.com/yourusername/fulgul/discussions)
+[📥 Download](#-installation) • [📚 Documentation](#-user-guide) • [🐛 Report Issues](https://github.com/thinking-mindy/fulgul/issues) • [💬 Discussions](https://github.com/thinking-mindy/fulgul/discussions)
 
 </div>
 
@@ -744,21 +744,21 @@ Some features require elevated permissions:
 
 #### 📧 **Email**
 
-[support@fulgul.example.com](mailto:support@fulgul.example.com)
+[yhinkingmindszw@gmail.com](mailto:yhinkingmindszw@gmail.com)
 
 </td>
 <td align="center" width="25%">
 
 #### 🐛 **Report Issues**
 
-[GitHub Issues](https://github.com/yourusername/fulgul/issues)
+[GitHub Issues](https://github.com/thinking-mindy/fulgul/issues)
 
 </td>
 <td align="center" width="25%">
 
 #### 💬 **Discussions**
 
-[GitHub Discussions](https://github.com/yourusername/fulgul/discussions)
+[GitHub Discussions](https://github.com/thinking-mindy/fulgul/discussions)
 
 </td>
 <td align="center" width="25%">
@@ -811,7 +811,7 @@ This software is **proprietary**. All rights reserved.
 
 <div align="center">
 
-**Built with ❤️ by the Fulgul Team**
+**Built with ❤️ by [Thinking Minds](https://thinkingminds.co.zw)**
 
 Powered by modern technologies including Tauri, Next.js, React, and Rust
 
@@ -823,22 +823,22 @@ Powered by modern technologies including Tauri, Next.js, React, and Rust
 <tr>
 <td align="center">
 
-<a href="https://github.com/yourusername/fulgul">💻 GitHub</a>
+<a href="https://thinkingminds.co.zw">🌐 Website</a>
 
 </td>
 <td align="center">
 
-<a href="https://github.com/yourusername/fulgul/issues">🐛 Issues</a>
+<a href="https://github.com/thinking-mindy/fulgul">💻 GitHub</a>
 
 </td>
 <td align="center">
 
-<a href="https://github.com/yourusername/fulgul/discussions">💬 Discussions</a>
+<a href="https://github.com/thinking-mindy/fulgul/issues">🐛 Issues</a>
 
 </td>
 <td align="center">
 
-<a href="mailto:support@fulgul.example.com">📧 Email</a>
+<a href="mailto:yhinkingmindszw@gmail.com">📧 Email</a>
 
 </td>
 </tr>
