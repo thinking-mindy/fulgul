@@ -1,0 +1,14 @@
+# Ignore everything
+*
+
+# But track the .github/workflows directory
+!.github/
+!.github/**
+!.github/workflows/
+!.github/workflows/*.yml
+
+# Track README.md
+!README.md
+
+# Also track .gitignore itself
+!.gitignore
