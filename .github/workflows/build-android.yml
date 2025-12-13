@@ -1,0 +1,112 @@
+name: Build Android
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type (apk or aab)'
+        required: true
+        default: 'apk'
+        type: choice
+        options:
+          - apk
+          - aab
+          - all
+      source_branch:
+        description: 'Source branch to build from'
+        required: false
+        default: 'main'
+
+jobs:
+  build-android:
+    name: Build Android
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout source code from fulgul-source
+        uses: actions/checkout@v4
+        with:
+          repository: thinking-mindy/fulgul-source
+          ref: ${{ github.event.inputs.source_branch || 'main' }}
+          token: ${{ secrets.SOURCE_REPO_TOKEN }}
+          path: .
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: |
+            aarch64-linux-android
+            armv7-linux-androideabi
+            i686-linux-android
+            x86_64-linux-android
+
+      - name: Install Android NDK
+        run: |
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "ndk;25.2.9519653"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Build Android APK
+        if: github.event.inputs.build_type == 'apk' || github.event.inputs.build_type == 'all' || github.event_name == 'push'
+        run: npm run tauri:build:android:apk
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+      - name: Build Android AAB
+        if: github.event.inputs.build_type == 'aab' || github.event.inputs.build_type == 'all' || github.event_name == 'push'
+        run: npm run tauri:build:android:aab
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+      - name: Upload Android APK
+        if: github.event.inputs.build_type == 'apk' || github.event.inputs.build_type == 'all' || github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fulgul-android-apk
+          path: src-tauri/target/aarch64-linux-android/release/bundle/apk/*.apk
+          retention-days: 30
+
+      - name: Upload Android AAB
+        if: github.event.inputs.build_type == 'aab' || github.event.inputs.build_type == 'all' || github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fulgul-android-aab
+          path: src-tauri/target/aarch64-linux-android/release/bundle/aab/*.aab
+          retention-days: 30
+
+      - name: Create Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            src-tauri/target/aarch64-linux-android/release/bundle/apk/*.apk
+            src-tauri/target/aarch64-linux-android/release/bundle/aab/*.aab
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

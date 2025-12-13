@@ -12,6 +12,7 @@ on:
 # - Build Windows
 # - Build Linux  
 # - Build macOS
+# - Build Android
 
 jobs:
   trigger-builds:
@@ -30,6 +31,7 @@ jobs:
           echo "- Build Windows" >> $GITHUB_STEP_SUMMARY
           echo "- Build Linux" >> $GITHUB_STEP_SUMMARY
           echo "- Build macOS" >> $GITHUB_STEP_SUMMARY
+          echo "- Build Android" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Check the Actions tab to see all running workflows." >> $GITHUB_STEP_SUMMARY
 
