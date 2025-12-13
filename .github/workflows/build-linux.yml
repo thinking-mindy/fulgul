@@ -99,11 +99,21 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## 🐧 Linux Builds
+            - **DEB Package**: For Debian/Ubuntu-based distributions
+            - **AppImage**: Portable application that runs on most Linux distributions
+            
+            ### Installation
+            - **DEB**: `sudo dpkg -i fulgul_*.deb`
+            - **AppImage**: `chmod +x fulgul_*.AppImage && ./fulgul_*.AppImage`
           files: |
             src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/*.deb
             src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage/*.AppImage
           draft: false
-          prerelease: false
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

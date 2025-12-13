@@ -70,9 +70,22 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## 🍎 macOS Builds
+            - **Intel (x86_64)**: For Intel-based Macs
+            - **Apple Silicon (ARM64)**: For M1/M2/M3 Macs
+            
+            ### Installation
+            1. Download the appropriate DMG for your Mac
+            2. Open the DMG and drag Fulgul to Applications
+            3. On first launch, right-click and select "Open" (macOS security)
           files: |
             src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
             src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

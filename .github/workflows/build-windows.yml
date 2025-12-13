@@ -67,10 +67,26 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## 🚀 Fulgul ${{ github.ref_name }}
+            
+            ### Windows Builds
+            - **NSIS Installer**: Ready-to-install Windows installer
+            - **Standalone Executable**: Portable executable file
+            
+            ### Installation
+            1. Download the NSIS installer (`.exe`) for the easiest installation
+            2. Or download the standalone executable for portable use
+            
+            ---
+            *Automatically built and released via GitHub Actions*
           files: |
             src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
             src-tauri/target/x86_64-pc-windows-msvc/release/fulgul.exe
           draft: false
-          prerelease: false
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

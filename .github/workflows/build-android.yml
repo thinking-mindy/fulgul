@@ -103,11 +103,21 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## 📱 Android Builds
+            - **APK**: Direct installation file for Android devices
+            - **AAB**: Android App Bundle for Google Play Store distribution
+            
+            ### Installation
+            - **APK**: Enable "Install from unknown sources" and install the APK
+            - **AAB**: Upload to Google Play Console for distribution
           files: |
             src-tauri/target/aarch64-linux-android/release/bundle/apk/*.apk
             src-tauri/target/aarch64-linux-android/release/bundle/aab/*.aab
           draft: false
-          prerelease: false
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
