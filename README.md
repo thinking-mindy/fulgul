@@ -7,7 +7,7 @@
 ### **A comprehensive, secure, and modern security scanning and system hardening desktop application**
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=for-the-badge)](https://github.com/thinking-mindy/fulgul)
-[![Version](https://img.shields.io/badge/Version-0.1.0-blue?style=for-the-badge)](https://github.com/thinking-mindy/fulgul)
+[![Version](https://img.shields.io/badge/Version-1.0.2-blue?style=for-the-badge)](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
 [![License](https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)](https://github.com/thinking-mindy/fulgul)
 
@@ -16,6 +16,22 @@
 **Quick Links:** [🛡️ Defensive Hacking](#️-understanding-defensive-hacking) • [✨ Features](#-features) • [🚀 Installation](#-installation) • [📖 User Guide](#-user-guide) • [🆘 Support](#-support)
 
 [📥 Download](#-installation) • [📚 Documentation](#-user-guide) • [🐛 Report Issues](https://github.com/thinking-mindy/fulgul/issues) • [💬 Discussions](https://github.com/thinking-mindy/fulgul/discussions)
+
+</div>
+
+---
+
+## 📥 Download Latest Release
+
+<div align="center">
+
+### 🚀 **Get Fulgul v1.0.2**
+
+[![Download Windows](https://img.shields.io/badge/Download-Windows-blue?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
+[![Download macOS](https://img.shields.io/badge/Download-macOS-black?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
+[![Download Linux](https://img.shields.io/badge/Download-Linux-orange?style=for-the-badge&logo=linux&logoColor=white)](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
+
+**📦 [View All Releases](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)** • **📱 [Android Builds](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)**
 
 </div>
 
