@@ -6,18 +6,14 @@ on:
       - 'v*'
   workflow_dispatch:
     inputs:
-      build_32bit:
-        description: 'Build 32-bit version'
-        required: false
-        default: 'false'
-        type: boolean
       source_branch:
         description: 'Source branch to build from'
         required: false
         default: 'main'
 
 jobs:
-  build-windows:
+  build-windows-x64:
+    name: Build Windows 64-bit
     runs-on: windows-latest
     
     steps:
@@ -35,7 +31,7 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install Rust
+      - name: Install Rust (x86_64-pc-windows-msvc)
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-pc-windows-msvc
@@ -46,20 +42,20 @@ jobs:
       - name: Build frontend
         run: npm run build
 
-      - name: Build Tauri app (64-bit NSIS)
+      - name: Build Tauri app for Windows 64-bit (NSIS Installer)
         run: npm run tauri:build:win
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
-      - name: Upload 64-bit NSIS Installer
+      - name: Upload Windows 64-bit NSIS Installer
         uses: actions/upload-artifact@v4
         with:
           name: fulgul-windows-x64-nsis
           path: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
           retention-days: 30
 
-      - name: Upload 64-bit Executable
+      - name: Upload Windows 64-bit Standalone Executable
         uses: actions/upload-artifact@v4
         with:
           name: fulgul-windows-x64-exe
@@ -72,6 +68,7 @@ jobs:
         with:
           files: |
             src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+            src-tauri/target/x86_64-pc-windows-msvc/release/fulgul.exe
           draft: false
           prerelease: false
         env:
