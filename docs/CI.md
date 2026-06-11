@@ -50,17 +50,33 @@ Builds macOS DMG files for Intel and Apple Silicon.
 - `fulgul-macos-intel`: Intel DMG
 - `fulgul-macos-arm`: Apple Silicon DMG
 
-## Setting Up Secrets (Optional)
+## Setting Up Secrets
 
-For code signing, add these secrets to your GitHub repository:
+Build workflows pull application source from the private repo `thinking-mindy/fulgul-source`. You **must** configure a token before builds can succeed.
 
-1. Go to **Settings** → **Secrets and variables** → **Actions**
-2. Add the following secrets:
+### Required: `SOURCE_REPO_TOKEN`
+
+1. Sign in to GitHub as a user with read access to `thinking-mindy/fulgul-source`
+2. Create a **fine-grained personal access token** (or classic PAT with `repo` scope):
+   - **Repository access:** Only `thinking-mindy/fulgul-source`
+   - **Permissions:** Contents → Read-only
+3. In **`thinking-mindy/fulgul`** go to **Settings** → **Secrets and variables** → **Actions**
+4. Add a repository secret named `SOURCE_REPO_TOKEN` with the token value
+
+If this secret is missing, checkout fails with:
+
+```text
+could not read Username for 'https://github.com': terminal prompts disabled
+```
+
+**Tip:** For multiple repos in the org, add `SOURCE_REPO_TOKEN` as an **organization secret** and allow `fulgul` to use it.
+
+### Optional: Code signing
 
 - `TAURI_PRIVATE_KEY`: Your Tauri private key (for code signing)
 - `TAURI_KEY_PASSWORD`: Password for your private key
 
-**Note:** Secrets are optional. The build will work without them, but binaries won't be code-signed.
+**Note:** Signing secrets are optional. Builds work without them, but binaries won't be code-signed.
 
 ## Creating a Release
 
@@ -110,6 +126,8 @@ Check workflow status:
 1. Check the workflow logs
 2. Look for error messages
 3. Common issues:
+   - **`SOURCE_REPO_TOKEN` missing or expired** — re-create the PAT and update the secret
+   - **Token lacks access** — ensure the PAT can read `thinking-mindy/fulgul-source`
    - Missing dependencies
    - Rust compilation errors
    - Frontend build errors

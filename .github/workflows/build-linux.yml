@@ -29,6 +29,15 @@ jobs:
       contents: write
     
     steps:
+      - name: Verify source repo token
+        env:
+          SOURCE_REPO_TOKEN: ${{ secrets.SOURCE_REPO_TOKEN }}
+        run: |
+          if [ -z "$SOURCE_REPO_TOKEN" ]; then
+            echo "::error::SOURCE_REPO_TOKEN is not set. Add a fine-grained PAT with read access to thinking-mindy/fulgul-source under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
       - name: Checkout source code from fulgul-source
         uses: actions/checkout@v4
         with:
