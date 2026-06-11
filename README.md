@@ -27,6 +27,7 @@
 
 ### 🚀 **Get Fulgul v1.0.2**
 
+
 [![Download Windows](https://img.shields.io/badge/Download-Windows-blue?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
 [![Download macOS](https://img.shields.io/badge/Download-macOS-black?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
 [![Download Linux](https://img.shields.io/badge/Download-Linux-orange?style=for-the-badge&logo=linux&logoColor=white)](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
