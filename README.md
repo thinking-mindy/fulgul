@@ -4,18 +4,18 @@
 
 ![Fulgul: The Spark](https://via.placeholder.com/800x200/1a1a1a/ff6b35?text=Fulgul%3A+The+Spark)
 
-### **A comprehensive, secure, and modern security scanning and system hardening desktop application**
+### **Free, full-stack security platform — Blue Team defense, Red Team pentest pipelines, and real shell tooling**
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=for-the-badge)](https://github.com/thinking-mindy/fulgul)
 [![Version](https://img.shields.io/badge/Version-1.0.2-blue?style=for-the-badge)](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
-[![License](https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge)](LICENSE)
+[![Price](https://img.shields.io/badge/Price-100%25%20Free-brightgreen?style=for-the-badge)](https://github.com/thinking-mindy/fulgul)
 [![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)](https://github.com/thinking-mindy/fulgul)
 
 ---
 
-**Quick Links:** [🛡️ Defensive Hacking](#️-understanding-defensive-hacking) • [✨ Features](#-features) • [🚀 Installation](#-installation) • [📖 User Guide](#-user-guide) • [🆘 Support](#-support)
+**Quick Links:** [🔴 Red Team](#-red-team-kill-chain-pipeline) • [🔵 Blue Team](#-blue-team-defense-pipeline) • [✨ Features](#-features) • [🚀 Installation](#-installation) • [☕ Support](#-support)
 
-[📥 Download](#-installation) • [📚 Documentation](#-user-guide) • [🐛 Report Issues](https://github.com/thinking-mindy/fulgul/issues) • [💬 Discussions](https://github.com/thinking-mindy/fulgul/discussions)
+[📥 Download](#-installation) • [📚 Documentation](#-user-guide) • [🐛 Report Issues](https://github.com/thinking-mindy/fulgul/issues) • [💬 Discussions](https://github.com/thinking-mindy/fulgul/discussions) • [☕ Buy Me a Coffee](https://buymeacoffee.com/thinkingminds)
 
 </div>
 
@@ -39,7 +39,9 @@
 
 ## 🎯 What is Fulgul: The Spark?
 
-**Fulgul: The Spark** is a powerful, user-friendly desktop application designed to help you secure your system through vulnerability scanning, attack simulations, and automated hardening. Whether you're a security professional, system administrator, or privacy-conscious user, Fulgul provides the tools you need to protect your system.
+**Fulgul: The Spark** is a free desktop security platform built with Tauri, React, and Rust. It unifies **defensive operations** (scanning, hardening, response) and **offensive security workflows** (recon, enumeration, exploitation labs, credential testing, and reporting) in one mission-control style interface.
+
+Whether you are hardening your own systems or running authorized pentest engagements, Fulgul gives you shared workspaces, activity logging, and exportable reports — with **no subscriptions, no paywalls, and no accounts required**.
 
 ---
 
@@ -134,8 +136,10 @@ Having plans and teams ready to respond to attacks. Fulgul's real-time scanning 
 **Fulgul embodies this philosophy** by providing you with:
 - 🔍 **Vulnerability scanning** to find weaknesses before attackers do
 - 🛡️ **System hardening** to build strong defenses
-- 🎮 **Attack simulations** to learn offensive techniques defensively
+- 🔴 **Red Team pipelines** to practice offensive techniques in authorized labs
+- 🔵 **Blue Team pipelines** to scope assets, assess risk, and respond
 - ⚡ **Automated fixes** to respond quickly to threats
+- 📄 **Engagement reports** to document everything you do
 
 ---
 
@@ -159,9 +163,10 @@ Having plans and teams ready to respond to attacks. Fulgul's real-time scanning 
 <td width="50%">
 
 #### 📊 **Comprehensive**
+- Blue Team + Red Team pipelines
 - 40+ hardening tasks
+- PDF engagement reports
 - Multi-platform support
-- Interactive learning tools
 
 #### 🎮 **User-Friendly**
 - Modern, intuitive interface
@@ -177,6 +182,84 @@ Having plans and teams ready to respond to attacks. Fulgul's real-time scanning 
 ## ✨ Features
 
 ### 🎨 **Complete Security Management Suite**
+
+Fulgul is organized into two operational pipelines — **Blue Team** (defend) and **Red Team** (test) — plus shared tooling for shells, reports, and workspaces.
+
+---
+
+### 🔵 Blue Team Defense Pipeline
+
+End-to-end defensive workflow with a shared **Defense Workspace** (`~/.fulgul/defense_workspace.json`).
+
+| Phase | Tool | Description |
+|-------|------|-------------|
+| **Scope** | Asset Scope | Register protected assets, networks, criticality, compliance notes |
+| **Discovery** | Local / Remote Scan | Audit this host or probe network targets |
+| **Assessment** | Vulnerabilities | Tracked findings with severity and status |
+| **Analysis** | Risk Analysis | Compare scans, score deltas, new/resolved vulns |
+| **Remediation** | Harden Systems | 40+ platform-specific hardening tasks |
+| **Response** | Auto Response | Configurable auto-patch, quarantine, and alerts |
+| **Reporting** | Security Reports | Activity log, report builder, MD/HTML/PDF export |
+
+**Hub:** `/blue-team` — pipeline overview with phase progress and workspace sync.
+
+---
+
+### 🔴 Red Team Kill Chain Pipeline
+
+Full pentest workflow with a shared **Pentest Workspace** (`~/.fulgul/pentest_workspace.json`).
+
+| Phase | Tool | Description |
+|-------|------|-------------|
+| **Planning** | Engagement Scope | Authorization, ROE, in/out-of-scope targets |
+| **Intelligence** | Recon Hub | DNS, WHOIS, SSL/TLS, HTTP headers, banner grab |
+| **Intelligence** | Enumeration | Port sweep, subdomain enum, web path enum, banners |
+| **Exploitation** | Vuln Scan | Remote vulnerability scanning |
+| **Exploitation** | Attack Lab | Real shell scenarios with flag capture |
+| **Exploitation** | Credential Lab | WiFi, SSH, and HTTP brute-force jobs |
+| **Post-Exploit** | Loot Vault | Auto-captured creds, flags, hashes, tokens |
+| **Reporting** | Engagement Reports | Toggle sections, export MD/HTML/PDF |
+
+**Hub:** `/red-team` — kill chain overview with shared targets, domains, URLs, and phase status.
+
+---
+
+### 🖥️ Security Shell
+
+A full-screen **Linux-style terminal** built into the app:
+
+- Integrated `operator@fulgul:~$` prompt with real command execution
+- Command history (`↑` / `↓`), `Ctrl+L` clear, `Ctrl+C` cancel
+- Built-in `help`, `clear`, and `exit` commands
+- Title bar, status bar, and TTY-style output coloring
+- 120-second timeout per command — authorized use only
+
+**Path:** `/terminal` (Quick Launch → Security Shell)
+
+---
+
+### 📄 Reporting & Activity Log
+
+All major actions are logged automatically — scans, brute jobs, recon, enumeration, attack sessions — and feed into the report builder:
+
+- Show/hide report sections (activity, loot, engagement, vulnerabilities)
+- Export as **Markdown**, **HTML**, or **PDF**
+- Engagement and defense workspaces stay in sync across tools
+
+---
+
+### ☕ Free Software — Support the Project
+
+Fulgul is **100% free**. There is no billing, no tiers, and no feature gating.
+
+If the project helps you, consider:
+- ☕ [Buy us a coffee](https://buymeacoffee.com/thinkingminds)
+- ⭐ [Star on GitHub](https://github.com/thinking-mindy/fulgul)
+- 🐛 [Report issues](https://github.com/thinking-mindy/fulgul/issues) or contribute code
+
+**In-app:** Sidebar → **Buy me a coffee** → `/support`
+
+---
 
 <details>
 <summary><b>🔍 Vulnerability Scanning</b> - Click to expand</summary>
@@ -216,16 +299,22 @@ Having plans and teams ready to respond to attacks. Fulgul's real-time scanning 
 </details>
 
 <details>
-<summary><b>🎮 Attack Simulation Hub</b> - Click to expand</summary>
+<summary><b>🎮 Attack Lab & Credential Testing</b> - Click to expand</summary>
 
-- 🎯 **Vulnerable Web Applications**: DVWA-style scenarios for learning
-- 🔓 **Weak SSH Credentials**: Practice SSH security testing
-- 📁 **SMB Guest Shares**: Learn about network share vulnerabilities
-- 🌐 **Vulnerable REST APIs**: Practice API security testing
-- ⚡ **Real-time Command Execution**: Interactive terminal for attacks
-- 🏁 **Flag Capture System**: Gamified learning experience
-- 📈 **Progress Tracking**: Monitor your learning progress
-- 🎓 **Scoring System**: Track your performance
+#### Attack Lab
+- 🎯 **Scenario labs**: Web, network, and API attack scenarios
+- ⚡ **Real shell execution**: Commands run as real processes on this machine
+- 🏁 **Flag capture**: Flags auto-captured into the Loot Vault
+- 📈 **Session tracking**: Live logs and progress per scenario
+
+#### Credential Lab
+- 📶 **WiFi**: Wordlist-based wireless testing (authorized networks only)
+- 🔐 **SSH**: Username/password brute-force jobs
+- 🌐 **HTTP**: Basic auth and form-based credential testing
+- 📋 **Wordlists**: Built-in and custom wordlist support
+- 🔄 **Job queue**: Start, monitor, and review brute-force results
+
+> ⚠️ **Authorized use only** — only test systems and networks you own or have written permission to assess.
 
 </details>
 
@@ -297,14 +386,14 @@ Having plans and teams ready to respond to attacks. Fulgul's real-time scanning 
 
 #### Option 1: NSIS Installer (Recommended)
 
-1. **Download** `fulgul_0.1.0_x64-setup.exe`
+1. **Download** `fulgul_1.0.2_x64-setup.exe` from [Releases](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
 2. **Run** the installer
 3. **Follow** the installation wizard
 4. **Launch** from Start menu or desktop shortcut
 
 #### Option 2: MSI Installer
 
-1. **Download** `fulgul_0.1.0_x64_en-US.msi`
+1. **Download** `fulgul_1.0.2_x64_en-US.msi` from [Releases](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
 2. **Double-click** to install
 3. **Launch** from Start menu
 
@@ -321,14 +410,14 @@ Having plans and teams ready to respond to attacks. Fulgul's real-time scanning 
 
 #### For Intel Macs
 
-1. **Download** `fulgul_0.1.0_x64.dmg`
+1. **Download** `fulgul_1.0.2_x64.dmg` from [Releases](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
 2. **Open** the DMG file
 3. **Drag** "Fulgul" to Applications folder
 4. **Eject** the DMG
 
 #### For Apple Silicon (M1/M2/M3)
 
-1. **Download** `fulgul_0.1.0_arm64.dmg`
+1. **Download** `fulgul_1.0.2_arm64.dmg` from [Releases](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
 2. **Open** the DMG file
 3. **Drag** "Fulgul" to Applications folder
 4. **Eject** the DMG
@@ -357,23 +446,23 @@ xattr -cr /Applications/Fulgul.app
 
 ```bash
 # Download
-wget https://releases.example.com/fulgul_0.1.0_amd64.AppImage
+wget https://github.com/thinking-mindy/fulgul/releases/download/v1.0.2/fulgul_1.0.2_amd64.AppImage
 
 # Make executable
-chmod +x fulgul_0.1.0_amd64.AppImage
+chmod +x fulgul_1.0.2_amd64.AppImage
 
 # Run
-./fulgul_0.1.0_amd64.AppImage
+./fulgul_1.0.2_amd64.AppImage
 ```
 
 #### Debian/Ubuntu (.deb)
 
 ```bash
 # Download
-wget https://releases.example.com/fulgul_0.1.0_amd64.deb
+wget https://github.com/thinking-mindy/fulgul/releases/download/v1.0.2/fulgul_1.0.2_amd64.deb
 
 # Install
-sudo dpkg -i fulgul_0.1.0_amd64.deb
+sudo dpkg -i fulgul_1.0.2_amd64.deb
 sudo apt-get install -f  # Fix dependencies if needed
 
 # Launch
@@ -384,12 +473,12 @@ fulgul
 
 ```bash
 # Download
-wget https://releases.example.com/fulgul_0.1.0.x86_64.rpm
+wget https://github.com/thinking-mindy/fulgul/releases/download/v1.0.2/fulgul_1.0.2.x86_64.rpm
 
 # Install
-sudo rpm -i fulgul_0.1.0.x86_64.rpm
+sudo rpm -i fulgul_1.0.2.x86_64.rpm
 # Or with dnf
-sudo dnf install fulgul_0.1.0.x86_64.rpm
+sudo dnf install fulgul_1.0.2.x86_64.rpm
 
 # Launch
 fulgul
@@ -431,9 +520,11 @@ fulgul  # Linux
 
 ### 4️⃣ Explore Features
 
-- 🎮 Try the **Attack Hub** for hands-on learning
-- 📊 Review **Scan History** to track improvements
-- 🔍 Use **Remote Scan** to check network devices
+- 🔵 Open **Defense Pipeline** (`/blue-team`) for the full Blue Team workflow
+- 🔴 Open **Kill Chain Pipeline** (`/red-team`) for the full Red Team workflow
+- 🖥️ Launch **Security Shell** (`/terminal`) for a real Linux terminal
+- 📄 Build **Engagement Reports** with PDF export
+- 🎮 Try **Attack Lab** and **Credential Lab** for hands-on testing
 
 ---
 
@@ -499,25 +590,72 @@ fulgul  # Linux
 
 </details>
 
-### 🎮 Attack Simulation Hub
+### 🔴 Red Team Workflow
 
 <details>
-<summary><b>How to use the Attack Hub</b></summary>
+<summary><b>Kill Chain Pipeline guide</b></summary>
 
-1. Navigate to **Attack Hub** from the sidebar
-2. **Select** a scenario:
-   - Choose difficulty (Easy, Medium, Hard)
-   - Read scenario description
-   - View available flags
-3. **Start** the attack:
-   - Click **"Start Attack"**
-   - Use the interactive terminal
-   - Execute commands to progress
-   - Capture flags to complete
-4. **Track** progress:
-   - View real-time logs
-   - Monitor step completion
-   - Check your score
+1. Open **Kill Chain Pipeline** from the sidebar (`/red-team`)
+2. **Set engagement scope** — authorization, ROE, targets (`/engagement`)
+3. **Gather intelligence** — Recon Hub (DNS, TLS, WHOIS) and Enumeration
+4. **Exploit** — Vuln Scan, Attack Lab, or Credential Lab
+5. **Capture loot** — credentials and flags auto-save to Loot Vault
+6. **Report** — build and export engagement reports (MD/HTML/PDF)
+
+The **Pentest Workspace** bar on offensive pages keeps targets, domains, and URLs shared across all tools.
+
+</details>
+
+<details>
+<summary><b>Attack Lab guide</b></summary>
+
+1. Navigate to **Attack Lab** from the sidebar (`/attacks`)
+2. **Select** a scenario and read the description
+3. **Start** the session and run real shell commands
+4. **Capture flags** — auto-logged to Loot Vault and activity log
+5. Review output in the live terminal panel
+
+</details>
+
+<details>
+<summary><b>Credential Lab guide</b></summary>
+
+1. Navigate to **Credential Lab** (`/credentials`)
+2. Choose target type: **WiFi**, **SSH**, or **HTTP**
+3. Configure target, wordlist, and options
+4. Start the job and monitor progress
+5. Successful credentials are captured to Loot Vault automatically
+
+</details>
+
+### 🔵 Blue Team Workflow
+
+<details>
+<summary><b>Defense Pipeline guide</b></summary>
+
+1. Open **Defense Pipeline** (`/blue-team`)
+2. **Register assets** in Asset Scope — hostname, IP, criticality
+3. **Run scans** — local or remote discovery
+4. **Review vulnerabilities** and compare trends in Risk Analysis
+5. **Harden** and configure **Auto Response**
+6. **Export** security reports with activity history
+
+The **Defense Workspace** bar syncs assets and networks across scan, vuln, and hardening pages.
+
+</details>
+
+### 🖥️ Security Shell
+
+<details>
+<summary><b>Using the built-in terminal</b></summary>
+
+1. Open **Security Shell** from Quick Launch (`/terminal`)
+2. Type commands at the `operator@fulgul:~$` prompt
+3. Use `help` for shortcuts, `clear` to reset the screen
+4. `↑` / `↓` navigates command history
+5. `Ctrl+L` clears · `Ctrl+C` cancels the current line
+
+Commands execute on the local host with a 120-second timeout.
 
 </details>
 
@@ -563,10 +701,18 @@ fulgul  # Linux
 
 ### 🎓 Learning Security
 
-- Use the **Attack Hub** to practice
-- Try different scenarios
-- Learn common vulnerabilities
-- Practice remediation techniques
+- Use the **Attack Lab** to practice real shell scenarios
+- Run the **Kill Chain Pipeline** end-to-end on authorized lab targets
+- Try **Credential Lab** for WiFi, SSH, and HTTP testing
+- Learn common vulnerabilities and practice remediation
+
+### 🔴 Authorized Pentest Engagement
+
+1. Create an **Engagement Scope** with ROE and targets
+2. Run **Recon** and **Enumeration** — results sync to Pentest Workspace
+3. Execute **Attack Lab** or **Credential Lab** jobs
+4. Review captured **Loot** and auto-logged activity
+5. Export an **Engagement Report** (PDF/HTML/MD)
 
 ### 🌐 Network Security Assessment
 
@@ -609,17 +755,21 @@ Configure automated responses to security threats:
 
 ### Data Storage
 
-<div align="center">
+All data is stored locally under `~/.fulgul/` (Linux/macOS) or `%APPDATA%\fulgul\` (Windows):
 
-| Platform | Storage Location |
-|----------|------------------|
-| **Linux** | `~/.fulgul/scan_history.json` |
-| **macOS** | `~/.fulgul/scan_history.json` |
-| **Windows** | `%APPDATA%\fulgul\scan_history.json` |
+| File / Directory | Purpose |
+|------------------|---------|
+| `scan_history.json` | Local and remote scan results |
+| `pentest_workspace.json` | Red Team shared targets, domains, phase status |
+| `defense_workspace.json` | Blue Team assets, networks, phase status |
+| `engagements/` | Engagement scope, ROE, authorization records |
+| `loot/` | Captured credentials, flags, hashes, tokens |
+| `activities/` | Auto-logged activity for reports |
+| `reports/` | Saved report configurations |
+| `attack_sessions.json` | Attack lab session state |
+| `auto_response_settings.json` | Auto-response configuration |
 
-</div>
-
-- ✅ All scan data is stored **locally** on your machine
+- ✅ All data is stored **locally** on your machine
 - ✅ **No data** is sent to external servers
 - ✅ **No telemetry** or tracking
 - ✅ Complete privacy and data control
@@ -708,14 +858,34 @@ Some features require elevated permissions:
 
 > 📌 **Note**: This section tracks updates and improvements. See what's new in each version below.
 
-### 🎯 Version 0.1.0 (Current Release)
+### 🆕 Recent Updates
+
+<details open>
+<summary><b>Platform expansion (latest)</b></summary>
+
+- 🔴 **Red Team Kill Chain Pipeline** — 7-phase hub with shared Pentest Workspace
+- 🔵 **Blue Team Defense Pipeline** — 7-phase hub with shared Defense Workspace
+- 🔍 **Recon Hub** — DNS, WHOIS, SSL/TLS, HTTP headers, banner grab
+- 🔎 **Enumeration** — port sweep, subdomain enum, web path enum
+- 📋 **Engagement Scope** — authorization, ROE, in/out-of-scope targets
+- 🗃️ **Loot Vault** — auto-capture from brute jobs and attack lab flags
+- 🔑 **Credential Lab** — WiFi, SSH, HTTP brute-force with job queue
+- 📄 **Engagement Reports** — activity log, section toggles, MD/HTML/**PDF** export
+- 📊 **Risk Analysis** — scan comparison, score deltas, trend tracking
+- 🖥️ **Security Shell** — full Linux-style terminal with history and TTY colors
+- 🧭 **Mission-control sidebar** — Blue Team / Red Team grouped navigation
+- ☕ **Free forever** — billing removed; Support page with Buy Me a Coffee link
+
+</details>
+
+### 🎯 Version 1.0.2 (Current Release)
 
 <details>
-<summary><b>✨ New Features</b></summary>
+<summary><b>✨ Core Features</b></summary>
 
 - 🔍 **Vulnerability Scanning**: Comprehensive local and remote scanning
 - 🛡️ **System Hardening**: 40+ platform-specific hardening tasks
-- 🎮 **Attack Simulation Hub**: Interactive learning scenarios
+- 🎮 **Attack Lab**: Real shell scenarios with flag capture
 - 📊 **Security Dashboard**: Real-time monitoring and scoring
 - 💻 **Interactive Terminal**: Real-time command execution with password support
 - 📚 **Scan History**: Complete audit trail with export capabilities
@@ -752,36 +922,45 @@ Some features require elevated permissions:
 
 <div align="center">
 
-### 🤝 **We're Here to Help!**
+### 🤝 **Free Software — Support Optional**
+
+Fulgul is free with no subscriptions or paywalls. If it helps you, consider supporting development:
 
 <table>
 <tr>
-<td align="center" width="25%">
+<td align="center" width="20%">
 
-#### 📧 **Email**
+#### ☕ **Buy Me a Coffee**
 
-[yhinkingmindszw@gmail.com](mailto:yhinkingmindszw@gmail.com)
+[buymeacoffee.com/thinkingminds](https://buymeacoffee.com/thinkingminds)
 
 </td>
-<td align="center" width="25%">
+<td align="center" width="20%">
+
+#### ⭐ **Star on GitHub**
+
+[github.com/thinking-mindy/fulgul](https://github.com/thinking-mindy/fulgul)
+
+</td>
+<td align="center" width="20%">
 
 #### 🐛 **Report Issues**
 
 [GitHub Issues](https://github.com/thinking-mindy/fulgul/issues)
 
 </td>
-<td align="center" width="25%">
+<td align="center" width="20%">
 
 #### 💬 **Discussions**
 
 [GitHub Discussions](https://github.com/thinking-mindy/fulgul/discussions)
 
 </td>
-<td align="center" width="25%">
+<td align="center" width="20%">
 
-#### 📚 **Documentation**
+#### 📧 **Email**
 
-[User Guide](#-user-guide)
+[yhinkingmindszw@gmail.com](mailto:yhinkingmindszw@gmail.com)
 
 </td>
 </tr>
@@ -819,7 +998,7 @@ Please include:
 
 ## 📝 License
 
-This software is **proprietary**. All rights reserved.
+Fulgul is **free to use** with no subscription or feature tiers. See [LICENSE](LICENSE) for terms.
 
 ---
 
@@ -854,6 +1033,11 @@ Powered by modern technologies including Tauri, Next.js, React, and Rust
 </td>
 <td align="center">
 
+<a href="https://buymeacoffee.com/thinkingminds">☕ Coffee</a>
+
+</td>
+<td align="center">
+
 <a href="mailto:yhinkingmindszw@gmail.com">📧 Email</a>
 
 </td>
@@ -864,7 +1048,7 @@ Powered by modern technologies including Tauri, Next.js, React, and Rust
 
 <div align="center">
 
-**⭐ If you find this project useful, please consider giving it a star!**
+**⭐ If you find this project useful, star it on GitHub or [buy us a coffee](https://buymeacoffee.com/thinkingminds)!**
 
 ### 🔥 Stay Secure! 🔒
 
