@@ -1,8 +1,7 @@
 'use client';
 
-import { Box, LinearProgress, Typography } from '@mui/material';
+import { Box, LinearProgress, Typography, alpha } from '@mui/material';
 import type { ReactNode } from 'react';
-import GlassCard from './GlassCard';
 
 interface StatCardProps {
   label: string;
@@ -14,14 +13,6 @@ interface StatCardProps {
   action?: ReactNode;
 }
 
-const toneMap = {
-  primary: 'primary',
-  success: 'success',
-  warning: 'warning',
-  error: 'error',
-  info: 'info',
-} as const;
-
 export default function StatCard({
   label,
   value,
@@ -31,29 +22,40 @@ export default function StatCard({
   tone = 'primary',
   action,
 }: StatCardProps) {
-  const color = toneMap[tone];
-
   return (
-    <GlassCard>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+    <Box
+      sx={{
+        p: 2.25,
+        height: '100%',
+        borderRadius: 2.5,
+        border: '1px solid',
+        borderColor: 'divider',
+        bgcolor: 'background.paper',
+      }}
+    >
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.25 }}>
         <Typography
-          variant="overline"
-          sx={{ color: 'text.secondary', fontWeight: 700, letterSpacing: '0.08em', lineHeight: 1.4 }}
+          variant="caption"
+          sx={{
+            color: 'text.secondary',
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+          }}
         >
           {label}
         </Typography>
         {icon && (
           <Box
             sx={{
-              color: `${color}.main`,
-              opacity: 0.9,
+              color: `${tone}.main`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: 36,
-              height: 36,
-              borderRadius: 2,
-              bgcolor: (theme) => `${theme.palette[color].main}18`,
+              width: 30,
+              height: 30,
+              borderRadius: 1.5,
+              bgcolor: (t) => alpha(t.palette[tone].main, 0.12),
             }}
           >
             {icon}
@@ -61,18 +63,18 @@ export default function StatCard({
         )}
       </Box>
       <Typography
-        variant="h3"
         sx={{
           fontWeight: 800,
+          fontSize: '1.65rem',
           letterSpacing: '-0.04em',
           lineHeight: 1,
-          mb: hint ? 0.75 : progress !== undefined ? 1.5 : 0,
+          mb: hint || progress !== undefined ? 0.75 : 0,
         }}
       >
         {value}
       </Typography>
       {hint && (
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.45, display: 'block' }}>
           {hint}
         </Typography>
       )}
@@ -80,11 +82,11 @@ export default function StatCard({
         <LinearProgress
           variant="determinate"
           value={Math.min(100, Math.max(0, progress))}
-          color={color}
-          sx={{ mt: 2, height: 6, borderRadius: 99, bgcolor: 'action.hover' }}
+          color={tone}
+          sx={{ mt: 1.75, height: 4, borderRadius: 99, bgcolor: 'action.hover' }}
         />
       )}
-      {action && <Box sx={{ mt: 2 }}>{action}</Box>}
-    </GlassCard>
+      {action && <Box sx={{ mt: 1.5 }}>{action}</Box>}
+    </Box>
   );
 }

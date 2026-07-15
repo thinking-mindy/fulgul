@@ -41,8 +41,9 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import SignalWifi4BarIcon from '@mui/icons-material/SignalWifi4Bar';
 import { invoke } from '@tauri-apps/api/core';
 import PageHeader from '../../components/ui/PageHeader';
-import GlassCard from '../../components/ui/GlassCard';
 import StatCard from '../../components/ui/StatCard';
+import SectionLabel, { Panel } from '../../components/ui/SectionLabel';
+import GlassCard from '../../components/ui/GlassCard';
 import type {
   BruteJob,
   HttpBruteParams,
@@ -62,7 +63,7 @@ const VECTORS: { id: Vector; label: string; desc: string; icon: React.ReactNode;
   { id: 'wordlists', label: 'Wordlists', desc: 'Upload & manage', icon: <UploadFileIcon />, color: '#10b981' },
 ];
 
-function SectionLabel({ step, title, subtitle }: { step: number; title: string; subtitle?: string }) {
+function StepLabel({ step, title, subtitle }: { step: number; title: string; subtitle?: string }) {
   return (
     <Stack direction="row" spacing={1.5} alignItems="flex-start" sx={{ mb: 2 }}>
       <Box
@@ -400,80 +401,77 @@ export default function CredentialsPage() {
   );
 
   return (
-    <Box>
+    <Box sx={{ width: '100%' }}>
       <PageHeader
         eyebrow="Offensive · Credential lab"
-        title="Break creds."
-        titleAccent="With permission."
-        subtitle="Recon → enumerate users → spray wordlists. Hard timeouts, live job console, stop anytime."
-        chips={['WiFi', 'SSH', 'HTTP', 'Wordlists']}
+        title="Credential testing"
+        subtitle="Recon, enumerate, then spray wordlists — stop anytime."
       />
 
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid size={{ xs: 6, sm: 3 }}>
-          <StatCard label="Wordlists" value={wordlists.length} hint={`${totalWordlistLines.toLocaleString()} total lines`} icon={<UploadFileIcon />} tone="primary" />
+          <StatCard label="Wordlists" value={wordlists.length} hint={`${totalWordlistLines.toLocaleString()} total lines`} icon={<UploadFileIcon fontSize="small" />} tone="primary" />
         </Grid>
         <Grid size={{ xs: 6, sm: 3 }}>
-          <StatCard label="Job" value={jobRunning ? 'Live' : job?.status ?? 'Idle'} hint={job?.target ?? 'No active run'} icon={<RadarIcon />} tone={jobRunning ? 'warning' : 'primary'} />
+          <StatCard label="Job" value={jobRunning ? 'Live' : job?.status ?? 'Idle'} hint={job?.target ?? 'No active run'} icon={<RadarIcon fontSize="small" />} tone={jobRunning ? 'warning' : 'primary'} />
         </Grid>
         <Grid size={{ xs: 6, sm: 3 }}>
-          <StatCard label="Vector" value={VECTORS.find((v) => v.id === vector)?.label ?? '—'} hint="Current attack surface" icon={<KeyIcon />} tone="primary" />
+          <StatCard label="Vector" value={VECTORS.find((v) => v.id === vector)?.label ?? '—'} hint="Current attack surface" icon={<KeyIcon fontSize="small" />} tone="primary" />
         </Grid>
         <Grid size={{ xs: 6, sm: 3 }}>
-          <StatCard label="Policy" value="Auth only" hint="Authorized targets required" icon={<GppBadIcon />} tone="success" />
+          <StatCard label="Policy" value="Auth only" hint="Authorized targets required" icon={<GppBadIcon fontSize="small" />} tone="success" />
         </Grid>
       </Grid>
 
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={1} sx={{ mb: 3 }}>
-        <Alert severity="warning" sx={{ flex: 1, py: 0.5 }}>
+        <Alert severity="warning" sx={{ flex: 1, py: 0.5, borderRadius: 2 }}>
           Unauthorized access is illegal. Labs, CTFs, and systems you own only.
         </Alert>
-        <Alert severity="info" sx={{ flex: 1, py: 0.5 }}>
+        <Alert severity="info" sx={{ flex: 1, py: 0.5, borderRadius: 2 }}>
           Linux: nmcli + hydra · Windows: netsh + plink/OpenSSH
         </Alert>
       </Stack>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+        <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }} onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
-      <Grid container spacing={2.5}>
+      <Grid container spacing={2}>
         {/* Left — attack vector picker */}
         <Grid size={{ xs: 12, md: 3 }}>
           <Stack spacing={1.5}>
-            <Typography variant="overline" sx={{ fontWeight: 800, letterSpacing: '0.1em', color: 'text.secondary', px: 0.5 }}>
-              Attack surface
-            </Typography>
+            <SectionLabel>Attack surface</SectionLabel>
             {VECTORS.map((v) => {
               const active = vector === v.id;
               return (
-                <GlassCard
+                <Panel
                   key={v.id}
-                  highlight={active}
                   onClick={() => setVector(v.id)}
                   sx={{
-                    borderLeft: active ? `3px solid ${v.color}` : undefined,
+                    p: 1.75,
+                    borderColor: active ? 'primary.main' : 'divider',
+                    bgcolor: active ? 'action.hover' : 'background.paper',
                   }}
                 >
                   <Stack direction="row" spacing={1.5} alignItems="center">
                     <Box
                       sx={{
-                        width: 40,
-                        height: 40,
+                        width: 36,
+                        height: 36,
                         borderRadius: 2,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        bgcolor: alpha(v.color, 0.15),
-                        color: v.color,
+                        bgcolor: 'action.hover',
+                        color: 'primary.main',
                       }}
                     >
                       {v.icon}
                     </Box>
                     <Box>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 700 }}>
                         {v.label}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
@@ -481,7 +479,7 @@ export default function CredentialsPage() {
                       </Typography>
                     </Box>
                   </Stack>
-                </GlassCard>
+                </Panel>
               );
             })}
           </Stack>
@@ -490,10 +488,10 @@ export default function CredentialsPage() {
         {/* Center — config panels */}
         <Grid size={{ xs: 12, md: job ? 5 : 9 }}>
           {vector === 'wifi' && (
-            <Stack spacing={2.5}>
+            <Stack spacing={2}>
               <GlassCard>
-                <SectionLabel step={1} title="Recon — scan airspace" subtitle="Discover in-range networks (nmcli / netsh)" />
-                <Button variant="outlined" startIcon={wifiScanning ? <CircularProgress size={16} /> : <RefreshIcon />} onClick={scanWifi} disabled={wifiScanning} sx={{ mb: 2 }}>
+                <StepLabel step={1} title="Recon — scan airspace" subtitle="Discover in-range networks (nmcli / netsh)" />
+                <Button variant="outlined" startIcon={wifiScanning ? <CircularProgress size={16} /> : <RefreshIcon />} onClick={scanWifi} disabled={wifiScanning} sx={{ mb: 2, borderRadius: 2 }}>
                   {wifiScanning ? 'Scanning…' : 'Scan nearby WiFi'}
                 </Button>
                 {wifiNetworks.length > 0 && (
@@ -507,9 +505,9 @@ export default function CredentialsPage() {
                             sx={{
                               p: 1.5,
                               borderRadius: 2,
-                              border: '2px solid',
+                              border: '1px solid',
                               borderColor: selected ? 'primary.main' : 'divider',
-                              bgcolor: selected ? alpha('#10b981', 0.06) : 'background.default',
+                              bgcolor: selected ? 'action.hover' : 'background.paper',
                               cursor: 'pointer',
                               transition: 'all 0.2s',
                               '&:hover': { borderColor: 'primary.light' },
@@ -527,7 +525,9 @@ export default function CredentialsPage() {
                               <SignalBars signal={n.signal} />
                             </Stack>
                             {selected && (
-                              <Chip label="Target locked" size="small" color="primary" sx={{ mt: 1, height: 20, fontSize: '0.65rem' }} />
+                              <Typography variant="caption" color="primary.main" sx={{ mt: 1, display: 'block', fontWeight: 700 }}>
+                                Selected
+                              </Typography>
                             )}
                           </Box>
                         </Grid>
@@ -538,7 +538,7 @@ export default function CredentialsPage() {
               </GlassCard>
 
               <GlassCard>
-                <SectionLabel step={2} title="Attack — passphrase spray" subtitle="One attempt at a time, 8–12s cap each" />
+                <StepLabel step={2} title="Attack — passphrase spray" subtitle="One attempt at a time, 8–12s cap each" />
                 <Stack spacing={2}>
                   <WordlistSelect value={wifiWordlist} onChange={setWifiWordlist} label="Password wordlist" />
                   <Button
@@ -548,6 +548,7 @@ export default function CredentialsPage() {
                     onClick={startWifiBrute}
                     disabled={!selectedSsid || jobRunning}
                     fullWidth
+                    sx={{ borderRadius: 2 }}
                   >
                     {selectedSsid ? `Attack "${selectedSsid}"` : 'Select a network first'}
                   </Button>
@@ -557,9 +558,9 @@ export default function CredentialsPage() {
           )}
 
           {vector === 'ssh' && (
-            <Stack spacing={2.5}>
+            <Stack spacing={2}>
               <GlassCard>
-                <SectionLabel step={1} title="Target — probe SSH" subtitle="TCP connect + banner grab" />
+                <StepLabel step={1} title="Target — probe SSH" subtitle="TCP connect + banner grab" />
                 <Grid container spacing={2} sx={{ mb: sshBanner ? 2 : 0 }}>
                   <Grid size={{ xs: 12, sm: 7 }}>
                     <TextField label="Host" value={sshHost} onChange={(e) => setSshHost(e.target.value)} size="small" fullWidth />
@@ -568,7 +569,7 @@ export default function CredentialsPage() {
                     <TextField label="Port" value={sshPort} onChange={(e) => setSshPort(e.target.value)} size="small" fullWidth />
                   </Grid>
                   <Grid size={{ xs: 6, sm: 2 }}>
-                    <Button variant="outlined" fullWidth onClick={probeSsh} disabled={sshProbing} sx={{ height: '100%' }}>
+                    <Button variant="outlined" fullWidth onClick={probeSsh} disabled={sshProbing} sx={{ height: '100%', borderRadius: 2 }}>
                       {sshProbing ? '…' : 'Probe'}
                     </Button>
                   </Grid>
@@ -581,16 +582,16 @@ export default function CredentialsPage() {
               </GlassCard>
 
               <GlassCard>
-                <SectionLabel step={2} title="Enumerate — valid usernames" subtitle="SSH auth response fingerprinting" />
+                <StepLabel step={2} title="Enumerate — valid usernames" subtitle="SSH auth response fingerprinting" />
                 <TextField label="Candidates (one per line)" value={sshEnumInput} onChange={(e) => setSshEnumInput(e.target.value)} multiline rows={4} size="small" fullWidth sx={{ mb: 2 }} />
-                <Button variant="outlined" startIcon={sshEnumerating ? <CircularProgress size={16} /> : <SearchIcon />} onClick={enumSshUsers} disabled={sshEnumerating} sx={{ mb: 2 }}>
+                <Button variant="outlined" startIcon={sshEnumerating ? <CircularProgress size={16} /> : <SearchIcon />} onClick={enumSshUsers} disabled={sshEnumerating} sx={{ mb: 2, borderRadius: 2 }}>
                   Run enumeration
                 </Button>
                 {sshEnumResults.length > 0 && <EnumTable rows={sshEnumResults} kind="ssh" />}
               </GlassCard>
 
               <GlassCard highlight>
-                <SectionLabel step={3} title="Brute — credential spray" subtitle="hydra fast path, sshpass/plink fallback" />
+                <StepLabel step={3} title="Brute — credential spray" subtitle="hydra fast path, sshpass/plink fallback" />
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField label="Single username (optional)" value={sshUser} onChange={(e) => setSshUser(e.target.value)} size="small" fullWidth helperText="Or use wordlist below" />
@@ -602,7 +603,7 @@ export default function CredentialsPage() {
                     <WordlistSelect value={sshPassWordlist} onChange={setSshPassWordlist} label="Password wordlist" />
                   </Grid>
                   <Grid size={{ xs: 12 }}>
-                    <Button variant="contained" size="large" startIcon={<PlayArrowIcon />} onClick={startSshBrute} disabled={jobRunning} fullWidth>
+                    <Button variant="contained" size="large" startIcon={<PlayArrowIcon />} onClick={startSshBrute} disabled={jobRunning} fullWidth sx={{ borderRadius: 2 }}>
                       Launch SSH brute
                     </Button>
                   </Grid>
@@ -612,9 +613,9 @@ export default function CredentialsPage() {
           )}
 
           {vector === 'http' && (
-            <Stack spacing={2.5}>
+            <Stack spacing={2}>
               <GlassCard>
-                <SectionLabel step={1} title="Target — login form" subtitle="Point at the POST endpoint" />
+                <StepLabel step={1} title="Target — login form" subtitle="Point at the POST endpoint" />
                 <Stack spacing={2}>
                   <TextField label="Login URL" value={httpUrl} onChange={(e) => setHttpUrl(e.target.value)} size="small" fullWidth />
                   <Grid container spacing={2}>
@@ -629,16 +630,16 @@ export default function CredentialsPage() {
               </GlassCard>
 
               <GlassCard>
-                <SectionLabel step={2} title="Enumerate — username oracle" subtitle="Response length & error-message diffing" />
+                <StepLabel step={2} title="Enumerate — username oracle" subtitle="Response length & error-message diffing" />
                 <TextField label="Candidates (one per line)" value={httpEnumInput} onChange={(e) => setHttpEnumInput(e.target.value)} multiline rows={3} size="small" fullWidth sx={{ mb: 2 }} />
-                <Button variant="outlined" startIcon={httpEnumerating ? <CircularProgress size={16} /> : <SearchIcon />} onClick={enumHttpUsers} disabled={httpEnumerating} sx={{ mb: 2 }}>
+                <Button variant="outlined" startIcon={httpEnumerating ? <CircularProgress size={16} /> : <SearchIcon />} onClick={enumHttpUsers} disabled={httpEnumerating} sx={{ mb: 2, borderRadius: 2 }}>
                   Enumerate via form
                 </Button>
                 {httpEnumResults.length > 0 && <EnumTable rows={httpEnumResults} kind="http" />}
               </GlassCard>
 
               <GlassCard highlight>
-                <SectionLabel step={3} title="Brute — login spray" subtitle="reqwest native or hydra http-post-form" />
+                <StepLabel step={3} title="Brute — login spray" subtitle="reqwest native or hydra http-post-form" />
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField label="Single username (optional)" value={httpUser} onChange={(e) => setHttpUser(e.target.value)} size="small" fullWidth />
@@ -650,7 +651,7 @@ export default function CredentialsPage() {
                     <WordlistSelect value={httpPassWordlist} onChange={setHttpPassWordlist} label="Password wordlist" />
                   </Grid>
                   <Grid size={{ xs: 12 }}>
-                    <Button variant="contained" size="large" startIcon={<PlayArrowIcon />} onClick={startHttpBrute} disabled={jobRunning} fullWidth>
+                    <Button variant="contained" size="large" startIcon={<PlayArrowIcon />} onClick={startHttpBrute} disabled={jobRunning} fullWidth sx={{ borderRadius: 2 }}>
                       Launch HTTP brute
                     </Button>
                   </Grid>
@@ -660,12 +661,12 @@ export default function CredentialsPage() {
           )}
 
           {vector === 'wordlists' && (
-            <Stack spacing={2.5}>
+            <Stack spacing={2}>
               <GlassCard highlight>
-                <SectionLabel step={1} title="Upload custom wordlist" subtitle=".txt · .lst · .csv — max 500k lines" />
+                <StepLabel step={1} title="Upload custom wordlist" subtitle=".txt · .lst · .csv — max 500k lines" />
                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ sm: 'center' }}>
                   <TextField label="Display name (optional)" value={uploadName} onChange={(e) => setUploadName(e.target.value)} size="small" sx={{ flex: 1 }} />
-                  <Button variant="contained" component="label" startIcon={<UploadFileIcon />} sx={{ minWidth: 160 }}>
+                  <Button variant="contained" component="label" startIcon={<UploadFileIcon />} sx={{ minWidth: 160, borderRadius: 2 }}>
                     Choose file
                     <input ref={fileInputRef} type="file" accept=".txt,.lst,.csv" hidden onChange={handleFileUpload} />
                   </Button>
@@ -673,7 +674,7 @@ export default function CredentialsPage() {
               </GlassCard>
 
               <GlassCard>
-                <SectionLabel step={2} title="Arsenal" subtitle={`${wordlists.length} lists ready`} />
+                <StepLabel step={2} title="Arsenal" subtitle={`${wordlists.length} lists ready`} />
                 <Grid container spacing={1.5}>
                   {wordlists.map((w) => (
                     <Grid size={{ xs: 12, sm: 6 }} key={w.id}>
@@ -698,7 +699,7 @@ export default function CredentialsPage() {
                           <Stack direction="row" spacing={0.5}>
                             {w.builtin && <Chip label="built-in" size="small" color="primary" variant="outlined" />}
                             {!w.builtin && (
-                              <IconButton size="small" color="error" onClick={() => deleteWl(w.id)}>
+                              <IconButton size="small" onClick={() => deleteWl(w.id)} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
                                 <DeleteIcon fontSize="small" />
                               </IconButton>
                             )}
@@ -717,10 +718,10 @@ export default function CredentialsPage() {
         {job && (
           <Grid size={{ xs: 12, md: 4 }}>
             <Box sx={{ position: { md: 'sticky' }, top: 88 }}>
-              <GlassCard highlight sx={{ bgcolor: alpha('#0d1117', 0.4) }}>
+              <Panel>
                 <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
                   <Box>
-                    <Typography variant="overline" sx={{ fontWeight: 800, letterSpacing: '0.08em', color: 'primary.main' }}>
+                    <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: '0.12em', color: 'text.secondary' }}>
                       Live console
                     </Typography>
                     <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
@@ -746,7 +747,7 @@ export default function CredentialsPage() {
                   <LinearProgress
                     variant="determinate"
                     value={job.progress.percent}
-                    sx={{ height: 8, borderRadius: 4 }}
+                    sx={{ height: 4, borderRadius: 99 }}
                   />
                   {job.progress.current && (
                     <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace', display: 'block', mt: 0.5 }} noWrap>
@@ -767,7 +768,7 @@ export default function CredentialsPage() {
                 )}
 
                 {jobRunning && (
-                  <Button fullWidth color="error" variant="outlined" startIcon={<StopIcon />} onClick={stopJob} sx={{ mb: 2 }}>
+                  <Button fullWidth color="error" variant="outlined" startIcon={<StopIcon />} onClick={stopJob} sx={{ mb: 2, borderRadius: 2 }}>
                     Stop job
                   </Button>
                 )}
@@ -776,8 +777,7 @@ export default function CredentialsPage() {
                   sx={{
                     p: 1.5,
                     borderRadius: 2,
-                    bgcolor: '#0d1117',
-                    color: '#c9d1d9',
+                    bgcolor: 'action.hover',
                     fontFamily: 'ui-monospace, monospace',
                     fontSize: '0.7rem',
                     maxHeight: 280,
@@ -796,19 +796,19 @@ export default function CredentialsPage() {
                     ))
                   )}
                 </Box>
-              </GlassCard>
+              </Panel>
             </Box>
           </Grid>
         )}
       </Grid>
 
       {!job && (
-        <GlassCard sx={{ mt: 3, textAlign: 'center', py: 4 }}>
+        <Panel sx={{ mt: 3, textAlign: 'center', py: 4 }}>
           <SignalWifi4BarIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
           <Typography variant="body2" color="text.secondary">
             Pick an attack surface, configure your target, then launch — the live console appears here during a run.
           </Typography>
-        </GlassCard>
+        </Panel>
       )}
     </Box>
   );

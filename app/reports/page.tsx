@@ -8,14 +8,12 @@ import {
   TextField,
   Button,
   Stack,
-  Chip,
   Alert,
   Switch,
   FormControlLabel,
   IconButton,
   Tooltip,
   Divider,
-  alpha,
   CircularProgress,
   MenuItem,
   Select,
@@ -34,8 +32,8 @@ import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import SyncIcon from '@mui/icons-material/Sync';
 import { invoke } from '@tauri-apps/api/core';
 import PageHeader from '../../components/ui/PageHeader';
-import GlassCard from '../../components/ui/GlassCard';
 import StatCard from '../../components/ui/StatCard';
+import { Panel } from '../../components/ui/SectionLabel';
 import type { PentestActivity, PentestReport } from '../../types/tauri';
 
 const CATEGORIES = [
@@ -46,27 +44,6 @@ const CATEGORIES = [
   { id: 'recon', label: 'Recon' },
   { id: 'notes', label: 'Notes' },
 ];
-
-const severityColor = (s: string) => {
-  switch (s) {
-    case 'critical': return '#ef4444';
-    case 'high': return '#f97316';
-    case 'medium': return '#eab308';
-    case 'low': return '#3b82f6';
-    default: return '#64748b';
-  }
-};
-
-const categoryIcon = (c: string) => {
-  switch (c) {
-    case 'scan': return '🔍';
-    case 'credential': return '🔑';
-    case 'attack': return '⚔️';
-    case 'recon': return '🛰️';
-    case 'notes': return '📝';
-    default: return '📋';
-  }
-};
 
 export default function ReportsPage() {
   const [activities, setActivities] = useState<PentestActivity[]>([]);
@@ -268,13 +245,18 @@ export default function ReportsPage() {
   };
 
   return (
-    <Box>
+    <Box sx={{ width: '100%' }}>
       <PageHeader
-        eyebrow="Offensive · Reporting"
-        title="Document everything."
-        titleAccent="Share what matters."
-        subtitle="Every scan, brute, recon run, and attack lab session is logged automatically. Build client-ready reports with show/hide controls."
-        chips={['Auto-capture', 'Toggle sections', 'MD & HTML export']}
+        eyebrow="Phase 7 · Reporting"
+        title="Engagement reports"
+        subtitle="Compose client-ready reports from logged activity."
+        actions={
+          <Tooltip title="Refresh">
+            <IconButton size="small" onClick={loadData} disabled={loading} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+              <RefreshIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        }
       />
 
       {error && (
@@ -285,44 +267,39 @@ export default function ReportsPage() {
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid size={{ xs: 6, md: 3 }}>
-          <StatCard label="Activities logged" value={activities.length} icon={<AssessmentIcon />} tone="primary" />
+          <StatCard label="Activities logged" value={activities.length} icon={<AssessmentIcon fontSize="small" />} tone="primary" />
         </Grid>
         <Grid size={{ xs: 6, md: 3 }}>
-          <StatCard label="Saved reports" value={reports.length} icon={<SaveIcon />} tone="info" />
+          <StatCard label="Saved reports" value={reports.length} icon={<SaveIcon fontSize="small" />} tone="info" />
         </Grid>
         <Grid size={{ xs: 6, md: 3 }}>
-          <StatCard label="Visible in report" value={visibleCount} icon={<VisibilityIcon />} tone="success" />
+          <StatCard label="Visible in report" value={visibleCount} icon={<VisibilityIcon fontSize="small" />} tone="success" />
         </Grid>
         <Grid size={{ xs: 6, md: 3 }}>
-          <StatCard label="In report total" value={totalInReport} icon={<VisibilityOffIcon />} tone="warning" />
+          <StatCard label="In report total" value={totalInReport} icon={<VisibilityOffIcon fontSize="small" />} tone="warning" />
         </Grid>
       </Grid>
 
       <Grid container spacing={3}>
         {/* Activity feed */}
         <Grid size={{ xs: 12, lg: 4 }}>
-          <GlassCard>
-            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-              <Typography variant="subtitle1" fontWeight={700}>Activity log</Typography>
-              <Tooltip title="Refresh">
-                <IconButton size="small" onClick={loadData} disabled={loading}>
-                  <RefreshIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </Stack>
+          <Panel>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 2 }}>Activity log</Typography>
 
-            <Stack direction="row" spacing={0.5} flexWrap="wrap" sx={{ mb: 2, gap: 0.5 }}>
-              {CATEGORIES.map((c) => (
-                <Chip
-                  key={c.id}
-                  label={c.label}
-                  size="small"
-                  onClick={() => setCategory(c.id)}
-                  color={category === c.id ? 'primary' : 'default'}
-                  variant={category === c.id ? 'filled' : 'outlined'}
-                />
-              ))}
-            </Stack>
+            <FormControl fullWidth size="small" sx={{ mb: 2 }}>
+              <InputLabel>Category</InputLabel>
+              <Select
+                label="Category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                {CATEGORIES.map((c) => (
+                  <MenuItem key={c.id} value={c.id}>
+                    {c.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             <Stack spacing={1} sx={{ maxHeight: 520, overflow: 'auto', pr: 0.5 }}>
               {loading ? (
@@ -343,32 +320,28 @@ export default function ReportsPage() {
                         borderRadius: 2,
                         border: '1px solid',
                         borderColor: inReport ? 'primary.main' : 'divider',
-                        bgcolor: inReport ? alpha('#3b82f6', 0.06) : 'transparent',
+                        bgcolor: inReport ? 'action.hover' : 'transparent',
                       }}
                     >
                       <Stack direction="row" spacing={1} alignItems="flex-start">
-                        <Typography sx={{ fontSize: '1.1rem', lineHeight: 1 }}>{categoryIcon(act.category)}</Typography>
+                        
                         <Box sx={{ flex: 1, minWidth: 0 }}>
                           <Typography variant="body2" fontWeight={600} noWrap>{act.title}</Typography>
                           <Typography variant="caption" color="text.secondary" noWrap>{act.target}</Typography>
-                          <Stack direction="row" spacing={0.5} sx={{ mt: 0.5 }} flexWrap="wrap">
-                            <Chip label={act.severity} size="small" sx={{ height: 20, fontSize: '0.65rem', bgcolor: alpha(severityColor(act.severity), 0.15), color: severityColor(act.severity) }} />
-                            <Chip label={act.kind} size="small" variant="outlined" sx={{ height: 20, fontSize: '0.65rem' }} />
-                          </Stack>
                           <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
-                            {new Date(act.timestamp).toLocaleString()}
+                            {act.severity} · {act.kind} · {new Date(act.timestamp).toLocaleString()}
                           </Typography>
                         </Box>
                         {activeReport && (
                           <Stack>
                             <Tooltip title={inReport ? 'Remove from report' : 'Add to report'}>
-                              <IconButton size="small" onClick={() => toggleInReport(act.id)}>
+                              <IconButton size="small" onClick={() => toggleInReport(act.id)} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
                                 {inReport ? <DeleteIcon fontSize="small" color="error" /> : <AddIcon fontSize="small" />}
                               </IconButton>
                             </Tooltip>
                             {inReport && (
                               <Tooltip title={visible ? 'Hide in export' : 'Show in export'}>
-                                <IconButton size="small" onClick={() => toggleVisible(act.id)}>
+                                <IconButton size="small" onClick={() => toggleVisible(act.id)} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
                                   {visible ? <VisibilityIcon fontSize="small" color="primary" /> : <VisibilityOffIcon fontSize="small" />}
                                 </IconButton>
                               </Tooltip>
@@ -387,17 +360,17 @@ export default function ReportsPage() {
             <Stack spacing={1}>
               <TextField size="small" label="Title" value={noteTitle} onChange={(e) => setNoteTitle(e.target.value)} />
               <TextField size="small" label="Content" multiline rows={2} value={noteContent} onChange={(e) => setNoteContent(e.target.value)} />
-              <Button size="small" startIcon={<NoteAddIcon />} onClick={addNote} variant="outlined">Add note to log</Button>
+              <Button size="small" startIcon={<NoteAddIcon />} onClick={addNote} variant="outlined" sx={{ borderRadius: 2 }}>Add note to log</Button>
             </Stack>
-          </GlassCard>
+          </Panel>
         </Grid>
 
         {/* Report composer */}
         <Grid size={{ xs: 12, lg: 4 }}>
-          <GlassCard highlight>
+          <Panel>
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
               <Typography variant="subtitle1" fontWeight={700}>Report builder</Typography>
-              <Button size="small" startIcon={<AddIcon />} onClick={createReport} variant="contained">
+              <Button size="small" startIcon={<AddIcon />} onClick={createReport} variant="contained" sx={{ borderRadius: 2 }}>
                 New
               </Button>
             </Stack>
@@ -481,14 +454,14 @@ export default function ReportsPage() {
                 </Stack>
 
                 <Stack direction="row" spacing={1} flexWrap="wrap">
-                  <Button startIcon={saving ? <CircularProgress size={16} /> : <SaveIcon />} onClick={saveReport} variant="contained" disabled={saving}>
+                  <Button startIcon={saving ? <CircularProgress size={16} /> : <SaveIcon />} onClick={saveReport} variant="contained" disabled={saving} sx={{ borderRadius: 2 }}>
                     Save
                   </Button>
-                  <Button startIcon={<SyncIcon />} onClick={syncActivities} variant="outlined">Sync all</Button>
-                  <Button startIcon={<DownloadIcon />} onClick={() => exportFile('md')} variant="outlined">Export MD</Button>
-                  <Button startIcon={<DownloadIcon />} onClick={() => exportFile('html')} variant="outlined">Export HTML</Button>
-                  <Button startIcon={<DownloadIcon />} onClick={() => exportFile('pdf')} variant="outlined">Export PDF</Button>
-                  <IconButton color="error" onClick={() => deleteReport(activeReport.id)}><DeleteIcon /></IconButton>
+                  <Button startIcon={<SyncIcon />} onClick={syncActivities} variant="outlined" sx={{ borderRadius: 2 }}>Sync all</Button>
+                  <Button startIcon={<DownloadIcon />} onClick={() => exportFile('md')} variant="outlined" sx={{ borderRadius: 2 }}>Export MD</Button>
+                  <Button startIcon={<DownloadIcon />} onClick={() => exportFile('html')} variant="outlined" sx={{ borderRadius: 2 }}>Export HTML</Button>
+                  <Button startIcon={<DownloadIcon />} onClick={() => exportFile('pdf')} variant="outlined" sx={{ borderRadius: 2 }}>Export PDF</Button>
+                  <IconButton size="small" onClick={() => deleteReport(activeReport.id)} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}><DeleteIcon fontSize="small" /></IconButton>
                 </Stack>
               </Stack>
             ) : (
@@ -498,15 +471,15 @@ export default function ReportsPage() {
                 </Typography>
               </Box>
             )}
-          </GlassCard>
+          </Panel>
         </Grid>
 
         {/* Preview */}
         <Grid size={{ xs: 12, lg: 4 }}>
-          <GlassCard>
+          <Panel>
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
               <Typography variant="subtitle1" fontWeight={700}>Live preview</Typography>
-              <Button size="small" onClick={loadPreview} disabled={!activeReport || previewLoading}>
+              <Button size="small" onClick={loadPreview} disabled={!activeReport || previewLoading} sx={{ borderRadius: 2 }}>
                 {previewLoading ? <CircularProgress size={16} /> : 'Generate'}
               </Button>
             </Stack>
@@ -545,7 +518,7 @@ export default function ReportsPage() {
                 {preview}
               </Box>
             )}
-          </GlassCard>
+          </Panel>
         </Grid>
       </Grid>
     </Box>

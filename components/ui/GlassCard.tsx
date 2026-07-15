@@ -23,20 +23,20 @@ export default function GlassCard({
   return (
     <Card
       onClick={onClick}
+      elevation={0}
       sx={{
         height: '100%',
         bgcolor: 'background.paper',
         border: '1px solid',
         borderColor: highlight ? 'primary.main' : 'divider',
         borderRadius: 2.5,
-        boxShadow: highlight ? 'var(--tm-glow)' : 'var(--tm-shadow)',
-        transition: 'border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease',
+        boxShadow: 'none',
+        transition: 'border-color 0.2s ease, transform 0.2s ease, background-color 0.2s ease',
         cursor: onClick ? 'pointer' : 'default',
         '&:hover': onClick
           ? {
               borderColor: 'primary.main',
               transform: 'translateY(-2px)',
-              boxShadow: 'var(--tm-glow)',
             }
           : undefined,
         ...sx,

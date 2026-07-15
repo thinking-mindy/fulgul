@@ -54,22 +54,25 @@ export const surfacesCustomizations: Components<Theme> = {
     styleOverrides: {
       root: ({ theme }) => ({
         borderRadius: theme.shape.borderRadius,
-        border: `1px solid ${alpha(brand[500], 0.12)}`,
+        border: `1px solid ${theme.palette.divider}`,
         backgroundColor: theme.palette.background.paper,
-        boxShadow: '0 4px 24px hsla(0, 0%, 0%, 0.35)',
-        transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+        boxShadow: 'none',
+        transition: 'border-color 0.2s ease',
       }),
     },
   },
   MuiCard: {
+    defaultProps: {
+      elevation: 0,
+    },
     styleOverrides: {
       root: ({ theme }) => ({
         gap: 16,
         borderRadius: theme.shape.borderRadius,
-        border: `1px solid ${alpha(brand[500], 0.12)}`,
+        border: `1px solid ${theme.palette.divider}`,
         backgroundColor: theme.palette.background.paper,
-        boxShadow: '0 4px 24px hsla(0, 0%, 0%, 0.35)',
-        transition: 'border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease',
+        boxShadow: 'none',
+        transition: 'border-color 0.2s ease, transform 0.2s ease',
       }),
     },
   },

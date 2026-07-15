@@ -39,7 +39,6 @@ export default function WorkflowStrip() {
         borderRadius: 2.5,
         overflow: 'hidden',
         bgcolor: 'background.paper',
-        boxShadow: 'var(--tm-shadow)',
       }}
     >
       {steps.map((step, i) => (

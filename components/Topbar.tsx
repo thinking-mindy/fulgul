@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   AppBar,
   Toolbar,
@@ -12,30 +12,51 @@ import {
   useTheme,
   TextField,
   InputAdornment,
-  Avatar,
   Menu,
   MenuItem,
   Typography,
   Divider,
-  Chip,
   Stack,
   Paper,
   List,
   ListItemButton,
   ListItemText,
   CircularProgress,
+  alpha,
 } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
-import SettingsIcon from '@mui/icons-material/Settings';
-import LogoutIcon from '@mui/icons-material/Logout';
-import SecurityIcon from '@mui/icons-material/Security';
-import { alpha } from '@mui/material/styles';
+import LocalCafeIcon from '@mui/icons-material/LocalCafe';
 import { invoke } from '@tauri-apps/api/core';
+import { SIDEBAR_WIDTH } from './Sidebar';
 import { useSecurityOverview, formatTimeAgo } from '../hooks/useSecurityOverview';
 import type { SearchHit } from '../types/tauri';
+
+const pageTitles: Record<string, string> = {
+  '/': 'Dashboard',
+  '/terminal': 'Security Shell',
+  '/blue-team': 'Blue Team',
+  '/red-team': 'Red Team',
+  '/defense-scope': 'Assets',
+  '/scan-local': 'Local Scan',
+  '/scan-remote': 'Remote Scan',
+  '/scan-history': 'Scan History',
+  '/vulnerabilities': 'Findings',
+  '/risk-posture': 'Risk Analysis',
+  '/hardening': 'Harden',
+  '/response': 'Response',
+  '/reports': 'Reports',
+  '/defensive': 'Defensive Hub',
+  '/engagement': 'Engagement',
+  '/recon': 'Recon',
+  '/enumerate': 'Enumerate',
+  '/attacks': 'Attack Lab',
+  '/credentials': 'Credentials',
+  '/loot': 'Loot',
+  '/offensive': 'Offensive Hub',
+  '/support': 'Support',
+};
 
 interface TopbarProps {
   onMenuClick?: () => void;
@@ -44,16 +65,18 @@ interface TopbarProps {
 export default function Topbar({ onMenuClick }: TopbarProps) {
   const theme = useTheme();
   const router = useRouter();
+  const pathname = usePathname() ?? '/';
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { overview } = useSecurityOverview(60000);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notificationAnchor, setNotificationAnchor] = useState<null | HTMLElement>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchHit[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searching, setSearching] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const title = pageTitles[pathname] ?? 'Fulgul';
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -91,98 +114,102 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleProfileMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleNotificationMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setNotificationAnchor(event.currentTarget);
-  };
-
-  const handleNotificationMenuClose = () => {
-    setNotificationAnchor(null);
-  };
-
   const notifications = [
     ...overview.recentVulnerabilities.slice(0, 3).map((v) => ({
       id: v.id,
       title: v.title,
       time: formatTimeAgo(v.detectedAt),
-      type: v.severity === 'critical' || v.severity === 'high' ? 'error' : 'warning',
+      tone: v.severity === 'critical' || v.severity === 'high' ? 'error.main' : 'warning.main',
     })),
     ...(overview.recentScans[0]
-      ? [{
-          id: overview.recentScans[0].scanId,
-          title: `Scan complete — score ${overview.recentScans[0].securityScore}`,
-          time: formatTimeAgo(overview.recentScans[0].timestamp),
-          type: overview.recentScans[0].securityScore >= 70 ? 'success' : 'info',
-        }]
+      ? [
+          {
+            id: overview.recentScans[0].scanId,
+            title: `Scan complete — score ${overview.recentScans[0].securityScore}`,
+            time: formatTimeAgo(overview.recentScans[0].timestamp),
+            tone: overview.recentScans[0].securityScore >= 70 ? 'success.main' : 'text.secondary',
+          },
+        ]
       : []),
   ].slice(0, 5);
 
-  const getNotificationColor = (type: string) => {
-    switch (type) {
-      case 'error':
-        return 'error';
-      case 'warning':
-        return 'warning';
-      case 'success':
-        return 'success';
-      default:
-        return 'info';
-    }
+  const scoreLabel =
+    overview.totalScans > 0 ? `Score ${overview.averageScore}` : 'No scans yet';
+  const scoreColor =
+    overview.totalScans === 0
+      ? 'text.secondary'
+      : overview.averageScore >= 70
+        ? 'success.main'
+        : overview.averageScore >= 50
+          ? 'warning.main'
+          : 'error.main';
+
+  const iconBtnSx = {
+    width: 34,
+    height: 34,
+    border: '1px solid',
+    borderColor: 'divider',
+    borderRadius: 2,
+    color: 'text.secondary',
+    '&:hover': { bgcolor: 'action.hover', borderColor: 'primary.main', color: 'primary.main' },
   };
 
   return (
     <AppBar
       position="fixed"
+      elevation={0}
       sx={{
-        width: { xs: '100%', md: 'calc(100% - 280px)' },
-        ml: { xs: 0, md: '280px' },
-        bgcolor: 'background.paper',
+        width: { xs: '100%', md: `calc(100% - ${SIDEBAR_WIDTH}px)` },
+        ml: { xs: 0, md: `${SIDEBAR_WIDTH}px` },
+        bgcolor: (t) => alpha(t.palette.background.paper, 0.85),
         color: 'text.primary',
         borderBottom: '1px solid',
         borderColor: 'divider',
         boxShadow: 'none',
-        transition: 'margin-left 0.3s ease, width 0.3s ease',
-        backdropFilter: 'blur(10px)',
+        backdropFilter: 'blur(12px)',
       }}
     >
-      <Toolbar sx={{ px: { xs: 2, sm: 3 }, minHeight: '70px !important' }}>
+      <Toolbar
+        disableGutters
+        sx={{
+          px: { xs: 1.5, sm: 2.5 },
+          minHeight: '56px !important',
+          gap: 1.5,
+        }}
+      >
         {isMobile && (
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={onMenuClick}
-            sx={{
-              mr: 2,
-              '&:hover': {
-                bgcolor: 'action.hover',
-              },
-            }}
-          >
-            <MenuIcon />
+          <IconButton onClick={onMenuClick} sx={iconBtnSx} size="small">
+            <MenuIcon fontSize="small" />
           </IconButton>
         )}
 
-        {/* Search Bar */}
+        {!isMobile && (
+          <Typography
+            sx={{
+              fontWeight: 700,
+              fontSize: '0.95rem',
+              letterSpacing: '-0.02em',
+              minWidth: 120,
+              mr: 1,
+            }}
+            noWrap
+          >
+            {title}
+          </Typography>
+        )}
+
         <Box
           ref={searchRef}
           sx={{
             position: 'relative',
-            width: { xs: '100%', sm: 'auto' },
-            maxWidth: { xs: '100%', sm: 400 },
-            mr: { xs: 0, sm: 2 },
+            flex: { xs: 1, sm: '0 1 320px' },
+            maxWidth: 360,
           }}
         >
           <TextField
             size="small"
             hiddenLabel
-            placeholder="Search threats, vulnerabilities..."
+            placeholder="Search…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => searchResults.length > 0 && setSearchOpen(true)}
@@ -191,25 +218,39 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
               startAdornment: (
                 <InputAdornment position="start">
                   {searching ? (
-                    <CircularProgress size={18} />
+                    <CircularProgress size={14} />
                   ) : (
-                    <SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
+                    <SearchIcon sx={{ color: 'text.secondary', fontSize: 18 }} />
                   )}
                 </InputAdornment>
               ),
             }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                bgcolor: (t) => alpha(t.palette.background.default, 0.5),
+                '& fieldset': { borderColor: 'divider' },
+                '&:hover fieldset': { borderColor: 'divider' },
+                '&.Mui-focused fieldset': { borderColor: 'primary.main', borderWidth: 1 },
+              },
+              '& .MuiInputBase-input': { py: 0.9, fontSize: '0.85rem' },
+            }}
           />
           {searchOpen && searchResults.length > 0 && (
             <Paper
-              elevation={8}
+              elevation={0}
               sx={{
                 position: 'absolute',
-                top: 'calc(100% + 4px)',
+                top: 'calc(100% + 6px)',
                 left: 0,
                 right: 0,
                 zIndex: 1300,
-                maxHeight: 320,
+                maxHeight: 280,
                 overflow: 'auto',
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                bgcolor: 'background.paper',
               }}
             >
               <List dense disablePadding>
@@ -221,12 +262,13 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
                       setSearchQuery('');
                       router.push(hit.path);
                     }}
+                    sx={{ py: 1, px: 1.5 }}
                   >
                     <ListItemText
                       primary={hit.title}
                       secondary={`${hit.kind} · ${hit.subtitle}`}
-                      primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 600 }}
-                      secondaryTypographyProps={{ fontSize: '0.75rem' }}
+                      primaryTypographyProps={{ fontSize: '0.82rem', fontWeight: 600 }}
+                      secondaryTypographyProps={{ fontSize: '0.7rem' }}
                     />
                   </ListItemButton>
                 ))}
@@ -237,221 +279,88 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
 
         <Box sx={{ flexGrow: 1 }} />
 
-        {/* Action Buttons */}
-        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+        <Stack direction="row" spacing={1} alignItems="center">
           {!isMobile && (
-            <Chip
-              label={overview.totalScans > 0 ? `Score ${overview.averageScore}` : 'No scans'}
-              size="small"
-              color={
-                overview.totalScans === 0
-                  ? 'default'
-                  : overview.averageScore >= 70
-                    ? 'success'
-                    : overview.averageScore >= 50
-                      ? 'warning'
-                      : 'error'
-              }
-              sx={{ fontWeight: 700, mr: 0.5 }}
-            />
+            <Typography
+              variant="caption"
+              sx={{ fontWeight: 700, color: scoreColor, letterSpacing: '0.02em', mr: 0.5 }}
+            >
+              {scoreLabel}
+            </Typography>
           )}
-          {/* Notifications */}
+
           <IconButton
-            color="inherit"
-            onClick={handleNotificationMenuOpen}
-            sx={{
-              position: 'relative',
-              '&:hover': {
-                bgcolor: 'action.hover',
-              },
-            }}
+            size="small"
+            onClick={(e) => setNotificationAnchor(e.currentTarget)}
+            sx={iconBtnSx}
           >
             <Badge
               badgeContent={notifications.length || undefined}
               color="error"
-              sx={{
-                '& .MuiBadge-badge': {
-                  animation: 'pulse 2s infinite',
-                  '@keyframes pulse': {
-                    '0%, 100%': {
-                      transform: 'scale(1)',
-                    },
-                    '50%': {
-                      transform: 'scale(1.1)',
-                    },
-                  },
-                },
-              }}
+              sx={{ '& .MuiBadge-badge': { fontSize: '0.6rem', minWidth: 16, height: 16 } }}
             >
-              <NotificationsIcon />
+              <NotificationsIcon sx={{ fontSize: 18 }} />
             </Badge>
           </IconButton>
 
-          {/* Notification Menu */}
-          <Menu
-            anchorEl={notificationAnchor}
-            open={Boolean(notificationAnchor)}
-            onClose={handleNotificationMenuClose}
-            PaperProps={{
-              sx: {
-                mt: 1.5,
-                minWidth: 320,
-                maxHeight: 400,
-                bgcolor: 'background.paper',
-                border: '1px solid',
-                borderColor: 'divider',
-                boxShadow: (theme) =>
-                  `0 8px 24px ${alpha(theme.palette.common.black, 0.15)}`,
-              },
-            }}
-            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-          >
-            <Box sx={{ p: 2, pb: 1 }}>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                Notifications
+          <IconButton size="small" onClick={() => router.push('/support')} sx={iconBtnSx}>
+            <LocalCafeIcon sx={{ fontSize: 17, color: '#f59e0b' }} />
+          </IconButton>
+        </Stack>
+
+        <Menu
+          anchorEl={notificationAnchor}
+          open={Boolean(notificationAnchor)}
+          onClose={() => setNotificationAnchor(null)}
+          PaperProps={{
+            elevation: 0,
+            sx: {
+              mt: 1.25,
+              minWidth: 300,
+              maxWidth: 360,
+              maxHeight: 360,
+              bgcolor: 'background.paper',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 2.5,
+              boxShadow: 'none',
+            },
+          }}
+          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        >
+          <Box sx={{ px: 2, py: 1.5 }}>
+            <Typography sx={{ fontWeight: 700, fontSize: '0.85rem' }}>Activity</Typography>
+          </Box>
+          <Divider />
+          {notifications.length === 0 ? (
+            <MenuItem disabled sx={{ py: 2 }}>
+              <Typography variant="body2" color="text.secondary">
+                No recent activity
               </Typography>
-            </Box>
-            <Divider />
-            {notifications.length === 0 ? (
-              <MenuItem disabled>
-                <Typography variant="body2" color="text.secondary">
-                  No recent activity
-                </Typography>
-              </MenuItem>
-            ) : notifications.map((notification) => (
+            </MenuItem>
+          ) : (
+            notifications.map((n) => (
               <MenuItem
-                key={notification.id}
-                onClick={handleNotificationMenuClose}
-                sx={{
-                  py: 1.5,
-                  px: 2,
-                  '&:hover': {
-                    bgcolor: 'action.hover',
-                  },
-                }}
+                key={n.id}
+                onClick={() => setNotificationAnchor(null)}
+                sx={{ py: 1.25, px: 2, alignItems: 'flex-start' }}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}>
-                  <Avatar
-                    sx={{
-                      width: 32,
-                      height: 32,
-                      bgcolor: `${getNotificationColor(notification.type)}.main`,
-                    }}
-                  >
-                    <SecurityIcon sx={{ fontSize: 18 }} />
-                  </Avatar>
-                  <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      {notification.title}
+                <Box sx={{ width: '100%' }}>
+                  <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.35 }}>
+                    <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: n.tone, flexShrink: 0 }} />
+                    <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+                      {n.title}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {notification.time}
-                    </Typography>
-                  </Box>
-                  <Chip
-                    label={notification.type}
-                    size="small"
-                    color={getNotificationColor(notification.type) as any}
-                    sx={{ height: 20, fontSize: '0.65rem' }}
-                  />
+                  </Stack>
+                  <Typography variant="caption" color="text.secondary" sx={{ pl: 1.75 }}>
+                    {n.time}
+                  </Typography>
                 </Box>
               </MenuItem>
-            ))}
-          </Menu>
-
-          {/* Profile Menu */}
-          <IconButton
-            onClick={handleProfileMenuOpen}
-            sx={{
-              p: 0.5,
-              '&:hover': {
-                bgcolor: 'action.hover',
-              },
-            }}
-          >
-            <Avatar
-              sx={{
-                width: 36,
-                height: 36,
-                bgcolor: 'primary.main',
-                border: '2px solid',
-                borderColor: 'divider',
-              }}
-            >
-              <AccountCircleIcon />
-            </Avatar>
-          </IconButton>
-
-          {/* Profile Menu */}
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleProfileMenuClose}
-            PaperProps={{
-              sx: {
-                mt: 1.5,
-                minWidth: 200,
-                bgcolor: 'background.paper',
-                border: '1px solid',
-                borderColor: 'divider',
-                boxShadow: (theme) =>
-                  `0 8px 24px ${alpha(theme.palette.common.black, 0.15)}`,
-              },
-            }}
-            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-          >
-            <Box sx={{ p: 2, pb: 1 }}>
-              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                Free
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                freetrial@thinkingminds.co.zw
-              </Typography>
-            </Box>
-            <Divider />
-            <MenuItem
-              onClick={handleProfileMenuClose}
-              sx={{
-                py: 1.5,
-                '&:hover': {
-                  bgcolor: 'action.hover',
-                },
-              }}
-            >
-              <SettingsIcon sx={{ mr: 2, fontSize: 20 }} />
-              Settings
-            </MenuItem>
-            <MenuItem
-              onClick={handleProfileMenuClose}
-              sx={{
-                py: 1.5,
-                '&:hover': {
-                  bgcolor: 'action.hover',
-                },
-              }}
-            >
-              <SecurityIcon sx={{ mr: 2, fontSize: 20 }} />
-              Security
-            </MenuItem>
-            <Divider />
-            <MenuItem
-              onClick={handleProfileMenuClose}
-              sx={{
-                py: 1.5,
-                color: 'error.main',
-                '&:hover': {
-                  bgcolor: 'error.dark',
-                  color: 'error.contrastText',
-                },
-              }}
-            >
-              <LogoutIcon sx={{ mr: 2, fontSize: 20 }} />
-              Logout
-            </MenuItem>
-          </Menu>
-        </Stack>
+            ))
+          )}
+        </Menu>
       </Toolbar>
     </AppBar>
   );

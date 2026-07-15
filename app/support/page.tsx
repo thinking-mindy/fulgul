@@ -6,7 +6,6 @@ import {
   Typography,
   Button,
   Stack,
-  Chip,
   List,
   ListItem,
   ListItemIcon,
@@ -14,7 +13,6 @@ import {
   alpha,
 } from '@mui/material';
 import LocalCafeIcon from '@mui/icons-material/LocalCafe';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import StarIcon from '@mui/icons-material/Star';
 import BugReportIcon from '@mui/icons-material/BugReport';
@@ -23,7 +21,7 @@ import ForumIcon from '@mui/icons-material/Forum';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import PageHeader from '../../components/ui/PageHeader';
-import GlassCard from '../../components/ui/GlassCard';
+import SectionLabel, { Panel } from '../../components/ui/SectionLabel';
 
 const LINKS = {
   github: 'https://github.com/thinking-mindy/fulgul',
@@ -49,37 +47,35 @@ function openExternal(url: string) {
 
 export default function SupportPage() {
   return (
-    <Box>
+    <Box sx={{ width: '100%' }}>
       <PageHeader
         eyebrow="Community"
-        title="Free forever."
-        titleAccent="Support optional."
-        subtitle="Fulgul is free and open — built by Thinking Minds for security teams who need real tooling without subscription lock-in. If it helps you, consider buying us a coffee or contributing back."
-        chips={['100% free', 'No billing', 'Open source']}
+        title="Support Fulgul"
+        subtitle="Free and open. Coffee, stars, and contributions are optional."
       />
 
-      <GlassCard highlight sx={{ mb: 3 }}>
-        <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+      <Panel sx={{ mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
           <Box
             sx={{
-              width: 56,
-              height: 56,
+              width: 48,
+              height: 48,
               borderRadius: 2,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              bgcolor: alpha('#f59e0b', 0.15),
-              color: '#f59e0b',
+              bgcolor: (t) => alpha(t.palette.warning.main, 0.12),
+              color: 'warning.main',
             }}
           >
-            <VolunteerActivismIcon sx={{ fontSize: 32 }} />
+            <VolunteerActivismIcon />
           </Box>
           <Box sx={{ flex: 1, minWidth: 200 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
+            <Typography sx={{ fontWeight: 700, letterSpacing: '-0.02em', mb: 0.35 }}>
               Enjoying Fulgul?
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Your support keeps development going — whether that&apos;s a coffee, a GitHub star, or a bug report.
+              A coffee, a star, or a bug report helps keep development moving.
             </Typography>
           </Box>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
@@ -88,152 +84,132 @@ export default function SupportPage() {
               color="warning"
               startIcon={<LocalCafeIcon />}
               onClick={() => openExternal(LINKS.coffee)}
+              sx={{ borderRadius: 2 }}
             >
-              Buy me a coffee
+              Buy a coffee
             </Button>
             <Button
               variant="outlined"
               startIcon={<StarIcon />}
               onClick={() => openExternal(LINKS.github)}
+              sx={{ borderRadius: 2 }}
             >
               Star on GitHub
             </Button>
           </Stack>
         </Box>
-      </GlassCard>
+      </Panel>
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid size={{ xs: 12, md: 4 }}>
-          <GlassCard sx={{ height: '100%' }}>
-            <Box sx={{ p: 2.5 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                <LocalCafeIcon color="warning" />
-                <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                  Buy a coffee
-                </Typography>
-              </Box>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                A small tip helps cover hosting, tooling, and the time spent building features you use every day.
-              </Typography>
-              <Button
-                fullWidth
-                variant="contained"
-                color="warning"
-                startIcon={<LocalCafeIcon />}
-                onClick={() => openExternal(LINKS.coffee)}
-              >
-                Buy Me a Coffee
-              </Button>
-            </Box>
-          </GlassCard>
+          <Panel>
+            <Stack direction="row" alignItems="center" spacing={1.25} sx={{ mb: 1.5 }}>
+              <LocalCafeIcon color="warning" fontSize="small" />
+              <Typography sx={{ fontWeight: 700 }}>Buy a coffee</Typography>
+            </Stack>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.6 }}>
+              Tips help cover hosting, tooling, and ongoing feature work.
+            </Typography>
+            <Button
+              fullWidth
+              variant="contained"
+              color="warning"
+              startIcon={<LocalCafeIcon />}
+              onClick={() => openExternal(LINKS.coffee)}
+              sx={{ borderRadius: 2 }}
+            >
+              Buy a coffee
+            </Button>
+          </Panel>
         </Grid>
 
         <Grid size={{ xs: 12, md: 4 }}>
-          <GlassCard sx={{ height: '100%' }}>
-            <Box sx={{ p: 2.5 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                <CodeIcon color="primary" />
-                <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                  Contribute code
-                </Typography>
-              </Box>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Fork the repo, open a pull request, or help triage issues. Every contribution makes Fulgul better for everyone.
-              </Typography>
-              <Stack spacing={1}>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  startIcon={<GitHubIcon />}
-                  onClick={() => openExternal(LINKS.github)}
-                >
-                  View repository
-                </Button>
-                <Button
-                  fullWidth
-                  variant="text"
-                  startIcon={<ForumIcon />}
-                  onClick={() => openExternal(LINKS.discussions)}
-                >
-                  Join discussions
-                </Button>
-              </Stack>
-            </Box>
-          </GlassCard>
-        </Grid>
-
-        <Grid size={{ xs: 12, md: 4 }}>
-          <GlassCard sx={{ height: '100%' }}>
-            <Box sx={{ p: 2.5 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-                <BugReportIcon color="error" />
-                <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                  Report & improve
-                </Typography>
-              </Box>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Found a bug or have a feature idea? Open an issue — feedback from real users shapes the roadmap.
-              </Typography>
+          <Panel>
+            <Stack direction="row" alignItems="center" spacing={1.25} sx={{ mb: 1.5 }}>
+              <CodeIcon color="primary" fontSize="small" />
+              <Typography sx={{ fontWeight: 700 }}>Contribute</Typography>
+            </Stack>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.6 }}>
+              Fork the repo, open a PR, or help triage issues.
+            </Typography>
+            <Stack spacing={1}>
               <Button
                 fullWidth
                 variant="outlined"
-                color="error"
-                startIcon={<BugReportIcon />}
-                onClick={() => openExternal(LINKS.issues)}
+                startIcon={<GitHubIcon />}
+                onClick={() => openExternal(LINKS.github)}
+                sx={{ borderRadius: 2 }}
               >
-                Open an issue
+                View repository
               </Button>
-            </Box>
-          </GlassCard>
+              <Button
+                fullWidth
+                variant="text"
+                startIcon={<ForumIcon />}
+                onClick={() => openExternal(LINKS.discussions)}
+                sx={{ borderRadius: 2 }}
+              >
+                Discussions
+              </Button>
+            </Stack>
+          </Panel>
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Panel>
+            <Stack direction="row" alignItems="center" spacing={1.25} sx={{ mb: 1.5 }}>
+              <BugReportIcon color="error" fontSize="small" />
+              <Typography sx={{ fontWeight: 700 }}>Report & improve</Typography>
+            </Stack>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.6 }}>
+              Bugs and feature ideas shape the roadmap.
+            </Typography>
+            <Button
+              fullWidth
+              variant="outlined"
+              color="error"
+              startIcon={<BugReportIcon />}
+              onClick={() => openExternal(LINKS.issues)}
+              sx={{ borderRadius: 2 }}
+            >
+              Open an issue
+            </Button>
+          </Panel>
         </Grid>
       </Grid>
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 7 }}>
-          <GlassCard>
-            <Box sx={{ p: 2.5 }}>
-              <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-                Everything included — no tiers
-              </Typography>
-              <List dense disablePadding>
-                {FREE_FEATURES.map((feature) => (
-                  <ListItem key={feature} disablePadding sx={{ py: 0.4 }}>
-                    <ListItemIcon sx={{ minWidth: 32 }}>
-                      <CheckCircleIcon color="success" sx={{ fontSize: 18 }} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={feature}
-                      primaryTypographyProps={{ variant: 'body2' }}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-          </GlassCard>
+          <Panel>
+            <SectionLabel>Everything included</SectionLabel>
+            <List dense disablePadding>
+              {FREE_FEATURES.map((feature) => (
+                <ListItem key={feature} disablePadding sx={{ py: 0.4 }}>
+                  <ListItemIcon sx={{ minWidth: 32 }}>
+                    <CheckCircleIcon color="success" sx={{ fontSize: 18 }} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={feature}
+                    primaryTypographyProps={{ variant: 'body2' }}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Panel>
         </Grid>
 
         <Grid size={{ xs: 12, md: 5 }}>
-          <GlassCard>
-            <Box sx={{ p: 2.5, textAlign: 'center' }}>
-              <FavoriteIcon sx={{ fontSize: 40, color: 'error.main', mb: 1.5 }} />
-              <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
-                Made with care
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Fulgul: The Spark is built by{' '}
-                <Typography component="span" variant="body2" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                  Thinking Minds
-                </Typography>
-                . We believe security tooling should be accessible to everyone — not locked behind enterprise pricing.
-              </Typography>
-              <Chip
-                label="Free & open"
-                color="success"
-                size="small"
-                sx={{ fontWeight: 700 }}
-              />
-            </Box>
-          </GlassCard>
+          <Panel>
+            <Typography sx={{ fontWeight: 700, letterSpacing: '-0.02em', mb: 1 }}>
+              Built by Thinking Minds
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.65, mb: 1.5 }}>
+              Fulgul: The Spark is free security tooling without subscription lock-in.
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Free & open source
+            </Typography>
+          </Panel>
         </Grid>
       </Grid>
     </Box>

@@ -1,9 +1,9 @@
 'use client';
 
-import { Box, Button, Typography } from '@mui/material';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { Box, Typography } from '@mui/material';
+import NorthEastIcon from '@mui/icons-material/NorthEast';
 import type { ReactNode } from 'react';
-import GlassCard from './GlassCard';
+import { Panel } from './SectionLabel';
 
 interface FeatureTileProps {
   title: string;
@@ -13,14 +13,14 @@ interface FeatureTileProps {
   tag?: string;
 }
 
-export default function FeatureTile({ title, description, icon, onClick, tag }: FeatureTileProps) {
+export default function FeatureTile({ title, description, icon, onClick }: FeatureTileProps) {
   return (
-    <GlassCard onClick={onClick} highlight={false}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+    <Panel onClick={onClick}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
         <Box
           sx={{
-            width: 44,
-            height: 44,
+            width: 36,
+            height: 36,
             borderRadius: 2,
             display: 'flex',
             alignItems: 'center',
@@ -31,37 +31,22 @@ export default function FeatureTile({ title, description, icon, onClick, tag }: 
         >
           {icon}
         </Box>
-        {tag && (
-          <Typography
-            variant="caption"
-            sx={{
-              fontWeight: 700,
-              color: 'primary.main',
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-            }}
-          >
-            {tag}
-          </Typography>
-        )}
+        <NorthEastIcon
+          sx={{
+            fontSize: 16,
+            color: 'text.secondary',
+            opacity: 0.35,
+            transition: 'opacity 0.2s ease, transform 0.2s ease',
+            '.MuiBox-root:hover &': { opacity: 1, transform: 'translate(2px, -2px)' },
+          }}
+        />
       </Box>
-      <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.75, letterSpacing: '-0.02em' }}>
+      <Typography sx={{ fontWeight: 700, fontSize: '0.95rem', letterSpacing: '-0.02em', mb: 0.5 }}>
         {title}
       </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2, minHeight: 40 }}>
+      <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.55, display: 'block' }}>
         {description}
       </Typography>
-      <Button
-        size="small"
-        endIcon={<ArrowForwardIcon />}
-        onClick={(e) => {
-          e.stopPropagation();
-          onClick();
-        }}
-        sx={{ px: 0, '&:hover': { bgcolor: 'transparent' } }}
-      >
-        Open
-      </Button>
-    </GlassCard>
+    </Panel>
   );
 }

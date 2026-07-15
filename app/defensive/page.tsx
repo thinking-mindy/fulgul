@@ -8,18 +8,12 @@ import {
   Button,
   Chip,
   Stack,
-  LinearProgress,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Divider,
-  Alert,
   CircularProgress,
   IconButton,
   Tooltip,
+  alpha,
 } from '@mui/material';
-import ShieldIcon from '@mui/icons-material/Shield';
 import SecurityIcon from '@mui/icons-material/Security';
 import BugReportIcon from '@mui/icons-material/BugReport';
 import BuildIcon from '@mui/icons-material/Build';
@@ -29,10 +23,9 @@ import TerminalIcon from '@mui/icons-material/Terminal';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningIcon from '@mui/icons-material/Warning';
-import ErrorIcon from '@mui/icons-material/Error';
-import InfoIcon from '@mui/icons-material/Info';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useRouter } from 'next/navigation';
 import { invoke } from '@tauri-apps/api/core';
 import type { StoredScanResult, StoredVulnerability } from '../../types/tauri';
@@ -44,9 +37,8 @@ import {
 } from '../../lib/scan';
 import { formatTimeAgo } from '../../hooks/useSecurityOverview';
 import PageHeader from '../../components/ui/PageHeader';
-import StatCard from '../../components/ui/StatCard';
 import FeatureTile from '../../components/ui/FeatureTile';
-import GlassCard from '../../components/ui/GlassCard';
+import SectionLabel from '../../components/ui/SectionLabel';
 import SecurityScoreGauge from '../../components/SecurityScoreGauge';
 
 export default function DefensiveSecurityPage() {
@@ -143,259 +135,387 @@ export default function DefensiveSecurityPage() {
     }
   };
 
-  const getSeverityIcon = (severity: string) => {
-    switch (severity.toLowerCase()) {
-      case 'critical':
-        return <ErrorIcon />;
-      case 'high':
-      case 'medium':
-        return <WarningIcon />;
-      default:
-        return <InfoIcon />;
-    }
-  };
-
   const defensiveTools = [
     {
       title: 'Scan Local Machine',
-      description: 'Comprehensive vulnerability scan of your local system',
-      icon: <SecurityIcon />,
+      description: 'Packages, misconfigs, and local exposure.',
+      icon: <SecurityIcon fontSize="small" />,
       path: '/scan-local',
-      tag: 'Detect',
     },
     {
       title: 'Scan Remote IP',
-      description: 'Scan network devices for open ports and vulnerabilities',
-      icon: <SecurityIcon />,
+      description: 'Ports, banners, and network exposure.',
+      icon: <SecurityIcon fontSize="small" />,
       path: '/scan-remote',
-      tag: 'Network',
     },
     {
       title: 'View Vulnerabilities',
-      description: 'Review and manage all detected vulnerabilities',
-      icon: <BugReportIcon />,
+      description: 'Triage and track open findings.',
+      icon: <BugReportIcon fontSize="small" />,
       path: '/vulnerabilities',
-      tag: stats.totalVulnerabilities > 0 ? String(stats.totalVulnerabilities) : undefined,
     },
     {
       title: 'Harden Systems',
-      description: 'Apply guided hardening tasks to secure your system',
-      icon: <BuildIcon />,
+      description: 'Guided fixes with clear impact notes.',
+      icon: <BuildIcon fontSize="small" />,
       path: '/hardening',
-      tag: stats.hardeningTasksPending > 0 ? String(stats.hardeningTasksPending) : undefined,
     },
     {
       title: 'Scan History',
-      description: 'View complete audit trail of all scans',
-      icon: <HistoryIcon />,
+      description: 'Full audit trail of prior scans.',
+      icon: <HistoryIcon fontSize="small" />,
       path: '/scan-history',
-      tag: stats.totalScans > 0 ? String(stats.totalScans) : undefined,
     },
     {
       title: 'Auto Response',
-      description: 'Configure automated security responses — now persists and logs on scan',
-      icon: <AutoFixHighIcon />,
+      description: 'Patch, quarantine, and notify on scan.',
+      icon: <AutoFixHighIcon fontSize="small" />,
       path: '/response',
-      tag: 'Respond',
     },
     {
       title: 'Security Shell',
-      description: 'Run live diagnostics and remediation commands',
-      icon: <TerminalIcon />,
+      description: 'Live diagnostics and remediation.',
+      icon: <TerminalIcon fontSize="small" />,
       path: '/terminal',
-      tag: 'Shell',
     },
     {
       title: 'Compare Scans',
-      description: 'Diff two scans to see new and resolved findings',
-      icon: <CompareArrowsIcon />,
+      description: 'Diff new and resolved findings.',
+      icon: <CompareArrowsIcon fontSize="small" />,
       path: '/scan-history',
-      tag: stats.totalScans >= 2 ? 'Trend' : undefined,
+    },
+  ];
+
+  const vitals = [
+    {
+      label: 'Open findings',
+      value: stats.totalVulnerabilities,
+      detail:
+        stats.criticalVulnerabilities + stats.highVulnerabilities > 0
+          ? `${stats.criticalVulnerabilities} critical · ${stats.highVulnerabilities} high`
+          : `${stats.mediumVulnerabilities} medium · ${stats.lowVulnerabilities} low`,
+      icon: <BugReportIcon fontSize="small" />,
+      tone: stats.criticalVulnerabilities + stats.highVulnerabilities > 0 ? 'error.main' : 'text.primary',
+    },
+    {
+      label: 'Remediation',
+      value: `${fixRate}%`,
+      detail: `${stats.fixedVulnerabilities} fixed · ${stats.pendingVulnerabilities} pending`,
+      icon: <CheckCircleIcon fontSize="small" />,
+      tone: 'success.main',
+    },
+    {
+      label: 'Hardening',
+      value: stats.hardeningTasksApplied,
+      detail:
+        stats.hardeningTasksPending > 0
+          ? `${stats.hardeningTasksPending} tasks still pending`
+          : 'No pending hardening tasks',
+      icon: <WarningIcon fontSize="small" />,
+      tone: stats.hardeningTasksPending > 0 ? 'warning.main' : 'success.main',
     },
   ];
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <CircularProgress />
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 420 }}>
+        <CircularProgress size={32} thickness={3} />
       </Box>
     );
   }
 
   return (
-    <Box>
+    <Box sx={{ width: '100%' }}>
       <PageHeader
-        eyebrow="Defensive · Detect"
-        title="Harden posture."
-        titleAccent="Stay ahead of threats."
-        subtitle="Proactive defense through vulnerability scanning, system hardening, and automated response — the same security-first mindset as Thinking Minds."
-        chips={['Scan', 'Triage', 'Harden', 'Respond']}
+        eyebrow="Defensive hub"
+        title="Defense posture"
+        subtitle="Scan, triage, harden, and respond from one workspace."
         actions={
-          <Stack direction="row" spacing={1}>
+          <Stack direction="row" spacing={1} alignItems="center">
             <Tooltip title="Refresh">
-              <IconButton onClick={loadDefensiveData} color="primary">
-                <RefreshIcon />
+              <IconButton
+                onClick={loadDefensiveData}
+                size="small"
+                sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}
+              >
+                <RefreshIcon fontSize="small" />
               </IconButton>
             </Tooltip>
-            <Button variant="contained" startIcon={<PlayArrowIcon />} onClick={() => router.push('/scan-local')}>
+            <Button
+              variant="contained"
+              startIcon={<PlayArrowIcon />}
+              onClick={() => router.push('/scan-local')}
+              sx={{ borderRadius: 2, fontWeight: 700 }}
+            >
               Run scan
             </Button>
           </Stack>
         }
       />
 
-      <Grid container spacing={2.5} sx={{ mb: 4 }}>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <GlassCard>
-            <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 700, letterSpacing: '0.08em' }}>
-              Security score
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mt: 1 }}>
+      {/* Posture hero */}
+      <Box
+        sx={{
+          mb: 4,
+          p: { xs: 2.5, md: 3.5 },
+          borderRadius: 3,
+          border: '1px solid',
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
+        }}
+      >
+        <Grid container spacing={{ xs: 3, md: 4 }} alignItems="center">
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               <SecurityScoreGauge
                 score={stats.averageScore}
-                grade={stats.totalScans > 0 ? stats.securityGrade : 'No scans'}
+                grade={stats.totalScans > 0 ? stats.securityGrade : undefined}
                 compact
               />
-              <Box>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                  Average from {stats.totalScans} scan{stats.totalScans !== 1 ? 's' : ''}
-                </Typography>
-                {stats.totalScans === 0 && (
-                  <Button size="small" onClick={() => router.push('/scan-local')}>
-                    Run first scan
-                  </Button>
-                )}
-              </Box>
             </Box>
-          </GlassCard>
-        </Grid>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <StatCard
-            label="Vulnerabilities"
-            value={stats.totalVulnerabilities}
-            hint={`${stats.fixedVulnerabilities} fixed · ${stats.pendingVulnerabilities} pending`}
-            icon={<BugReportIcon />}
-            progress={fixRate}
-            tone={stats.criticalVulnerabilities + stats.highVulnerabilities > 0 ? 'error' : 'primary'}
-          />
-          <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap sx={{ mt: 1.5, px: 0.5 }}>
-            <Chip label={`${stats.criticalVulnerabilities} Critical`} size="small" color="error" />
-            <Chip label={`${stats.highVulnerabilities} High`} size="small" color="error" variant="outlined" />
-            <Chip label={`${stats.mediumVulnerabilities} Medium`} size="small" color="warning" />
-            <Chip label={`${stats.lowVulnerabilities} Low`} size="small" color="info" />
-          </Stack>
-        </Grid>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <StatCard
-            label="Hardening"
-            value={stats.hardeningTasksApplied}
-            hint={`${stats.hardeningTasksPending} tasks still pending`}
-            icon={<CheckCircleIcon />}
-            tone={stats.hardeningTasksPending > 0 ? 'warning' : 'success'}
-          />
-          {stats.hardeningTasksPending > 0 && (
-            <Alert severity="warning" sx={{ mt: 1.5 }}>
-              {stats.hardeningTasksPending} hardening task{stats.hardeningTasksPending !== 1 ? 's' : ''} pending
-            </Alert>
-          )}
-        </Grid>
-      </Grid>
-
-      <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: '0.1em', color: 'text.secondary', mb: 2, display: 'block' }}>
-        Defensive tools
-      </Typography>
-      <Grid container spacing={2.5} sx={{ mb: 4 }}>
-        {defensiveTools.map((tool) => (
-          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={tool.path}>
-            <FeatureTile
-              title={tool.title}
-              description={tool.description}
-              icon={tool.icon}
-              tag={tool.tag}
-              onClick={() => router.push(tool.path)}
-            />
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 1.5 }}>
+              {stats.totalScans > 0
+                ? `${stats.totalScans} scan${stats.totalScans !== 1 ? 's' : ''} on record`
+                : 'Run a scan to establish your baseline'}
+            </Typography>
           </Grid>
-        ))}
-      </Grid>
+
+          <Grid size={{ xs: 12, md: 8 }}>
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              divider={<Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', sm: 'block' } }} />}
+              spacing={0}
+              sx={{
+                border: '1px solid',
+                borderColor: (t) => alpha(t.palette.divider, 0.8),
+                borderRadius: 2.5,
+                overflow: 'hidden',
+              }}
+            >
+              {vitals.map((item, i) => (
+                <Box
+                  key={item.label}
+                  sx={{
+                    flex: 1,
+                    p: 2.5,
+                    borderBottom: {
+                      xs: i < vitals.length - 1 ? '1px solid' : 'none',
+                      sm: 'none',
+                    },
+                    borderColor: 'divider',
+                  }}
+                >
+                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1.25 }}>
+                    <Box
+                      sx={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: 1.5,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        bgcolor: (t) => alpha(t.palette.primary.main, 0.12),
+                        color: 'primary.main',
+                      }}
+                    >
+                      {item.icon}
+                    </Box>
+                    <Typography
+                      variant="caption"
+                      sx={{ fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'text.secondary' }}
+                    >
+                      {item.label}
+                    </Typography>
+                  </Stack>
+                  <Typography sx={{ fontWeight: 800, fontSize: '1.75rem', letterSpacing: '-0.04em', color: item.tone, lineHeight: 1 }}>
+                    {item.value}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.75, display: 'block' }}>
+                    {item.detail}
+                  </Typography>
+                </Box>
+              ))}
+            </Stack>
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Box sx={{ mb: 4 }}>
+        <SectionLabel>Launch</SectionLabel>
+        <Grid container spacing={1.5}>
+          {defensiveTools.map((tool) => (
+            <Grid size={{ xs: 12, sm: 6, md: 3 }} key={`${tool.path}-${tool.title}`}>
+              <FeatureTile
+                title={tool.title}
+                description={tool.description}
+                icon={tool.icon}
+                onClick={() => router.push(tool.path)}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
 
       <Grid container spacing={2.5}>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <GlassCard>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-              Recent scans
-            </Typography>
-            {stats.recentScans.length === 0 ? (
-              <Alert severity="info">No scans yet. Start with a local machine scan.</Alert>
-            ) : (
-              <List disablePadding>
-                {stats.recentScans.map((scan, index) => (
-                  <Box key={scan.scanId}>
-                    <ListItem sx={{ px: 0 }}>
-                      <ListItemIcon>
-                        <SecurityIcon
-                          color={scan.securityScore >= 70 ? 'success' : scan.securityScore >= 50 ? 'warning' : 'error'}
-                        />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {scan.os}
-                            </Typography>
-                            <Chip
-                              label={`Score ${scan.securityScore}`}
-                              size="small"
-                              color={scan.securityScore >= 70 ? 'success' : scan.securityScore >= 50 ? 'warning' : 'error'}
-                            />
-                          </Box>
-                        }
-                        secondary={formatTimeAgo(scan.timestamp)}
-                      />
-                      <Button size="small" onClick={() => router.push('/scan-history')}>
-                        View
-                      </Button>
-                    </ListItem>
-                    {index < stats.recentScans.length - 1 && <Divider />}
-                  </Box>
-                ))}
-              </List>
-            )}
-          </GlassCard>
-        </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <GlassCard>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-              Recent vulnerabilities
-            </Typography>
+        <Grid size={{ xs: 12, lg: 7 }}>
+          <Box
+            sx={{
+              height: '100%',
+              p: 2.75,
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
+              bgcolor: 'background.paper',
+            }}
+          >
+            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+              <Typography sx={{ fontWeight: 700, letterSpacing: '-0.02em' }}>Recent findings</Typography>
+              <Button
+                size="small"
+                endIcon={<ArrowForwardIcon sx={{ fontSize: 14 }} />}
+                onClick={() => router.push('/vulnerabilities')}
+                sx={{ color: 'text.secondary', fontWeight: 600 }}
+              >
+                View all
+              </Button>
+            </Stack>
+
             {stats.recentVulnerabilities.length === 0 ? (
-              <Alert severity="success">No vulnerabilities on record.</Alert>
+              <Box sx={{ py: 5, textAlign: 'center' }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, maxWidth: 280, mx: 'auto' }}>
+                  No findings yet. Start with a local scan to populate this feed.
+                </Typography>
+                <Button
+                  variant="outlined"
+                  startIcon={<SecurityIcon />}
+                  onClick={() => router.push('/scan-local')}
+                  sx={{ borderRadius: 2 }}
+                >
+                  Scan local machine
+                </Button>
+              </Box>
             ) : (
-              <List disablePadding>
-                {stats.recentVulnerabilities.map((vuln, index) => (
-                  <Box key={vuln.id}>
-                    <ListItem sx={{ px: 0 }}>
-                      <ListItemIcon>{getSeverityIcon(vuln.severity)}</ListItemIcon>
-                      <ListItemText
-                        primary={
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {vuln.title}
-                            </Typography>
-                            <Chip label={vuln.severity} size="small" color={getSeverityColor(vuln.severity) as 'error' | 'warning' | 'info'} />
-                          </Box>
-                        }
-                        secondary={formatTimeAgo(vuln.detectedAt)}
-                      />
-                      <Button size="small" onClick={() => router.push('/vulnerabilities')}>
-                        View
-                      </Button>
-                    </ListItem>
-                    {index < stats.recentVulnerabilities.length - 1 && <Divider />}
+              <Stack divider={<Divider sx={{ borderColor: (t) => alpha(t.palette.divider, 0.6) }} />}>
+                {stats.recentVulnerabilities.map((vuln) => (
+                  <Box
+                    key={vuln.id}
+                    sx={{
+                      py: 1.75,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1.5,
+                      cursor: 'pointer',
+                      borderRadius: 1,
+                      '&:hover': { bgcolor: 'action.hover' },
+                    }}
+                    onClick={() => router.push('/vulnerabilities')}
+                  >
+                    <Box
+                      sx={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        flexShrink: 0,
+                        bgcolor: `${getSeverityColor(vuln.severity)}.main`,
+                      }}
+                    />
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+                        {vuln.title}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {formatTimeAgo(vuln.detectedAt)}
+                      </Typography>
+                    </Box>
+                    <Chip
+                      label={vuln.severity}
+                      size="small"
+                      color={getSeverityColor(vuln.severity) as 'error' | 'warning' | 'info'}
+                      variant="outlined"
+                      sx={{ height: 22, fontSize: '0.65rem', fontWeight: 700, textTransform: 'capitalize' }}
+                    />
                   </Box>
                 ))}
-              </List>
+              </Stack>
             )}
-          </GlassCard>
+          </Box>
+        </Grid>
+
+        <Grid size={{ xs: 12, lg: 5 }}>
+          <Box
+            sx={{
+              height: '100%',
+              p: 2.75,
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
+              bgcolor: 'background.paper',
+            }}
+          >
+            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+              <Typography sx={{ fontWeight: 700, letterSpacing: '-0.02em' }}>Recent scans</Typography>
+              <Button
+                size="small"
+                endIcon={<ArrowForwardIcon sx={{ fontSize: 14 }} />}
+                onClick={() => router.push('/scan-history')}
+                sx={{ color: 'text.secondary', fontWeight: 600 }}
+              >
+                History
+              </Button>
+            </Stack>
+
+            {stats.recentScans.length === 0 ? (
+              <Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>
+                Scan history appears here after your first run.
+              </Typography>
+            ) : (
+              <Stack spacing={1.25}>
+                {stats.recentScans.map((scan) => (
+                  <Box
+                    key={scan.scanId}
+                    onClick={() => router.push('/scan-history')}
+                    sx={{
+                      px: 1.75,
+                      py: 1.5,
+                      borderRadius: 2,
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      transition: 'border-color 0.2s ease',
+                      '&:hover': { borderColor: 'primary.main' },
+                    }}
+                  >
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+                        {scan.os}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {formatTimeAgo(scan.timestamp)}
+                      </Typography>
+                    </Box>
+                    <Typography
+                      sx={{
+                        fontWeight: 800,
+                        fontSize: '0.95rem',
+                        letterSpacing: '-0.03em',
+                        color:
+                          scan.securityScore >= 70
+                            ? 'success.main'
+                            : scan.securityScore >= 50
+                              ? 'warning.main'
+                              : 'error.main',
+                      }}
+                    >
+                      {scan.securityScore}
+                    </Typography>
+                  </Box>
+                ))}
+              </Stack>
+            )}
+          </Box>
         </Grid>
       </Grid>
     </Box>

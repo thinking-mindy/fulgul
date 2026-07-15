@@ -5,22 +5,28 @@ import Grid from '@mui/material/Grid2';
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
   Alert,
   CircularProgress,
   Stack,
-  Chip,
   Button,
   Menu,
   MenuItem,
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
+import BugReportIcon from '@mui/icons-material/BugReport';
+import WarningIcon from '@mui/icons-material/Warning';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import SyncIcon from '@mui/icons-material/Sync';
 import { invoke } from '@tauri-apps/api/core';
 import type { StoredVulnerability } from '../../types/tauri';
 import VulnerabilityCard from '../../components/VulnerabilityCard';
 import FilterBar from '../../components/FilterBar';
 import DefenseWorkspaceBar from '../../components/defense/DefenseWorkspaceBar';
+import PageHeader from '../../components/ui/PageHeader';
+import StatCard from '../../components/ui/StatCard';
+import { Panel } from '../../components/ui/SectionLabel';
 
 export default function VulnerabilitiesPage() {
   const [loading, setLoading] = useState(true);
@@ -52,7 +58,7 @@ export default function VulnerabilitiesPage() {
   const handleExport = async (format: 'json' | 'csv') => {
     setExportAnchor(null);
     const filtered = getFilteredVulnerabilities();
-    
+
     if (format === 'json') {
       const json = JSON.stringify(filtered, null, 2);
       const blob = new Blob([json], { type: 'application/json' });
@@ -109,123 +115,67 @@ export default function VulnerabilitiesPage() {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
-        <CircularProgress />
+        <CircularProgress size={32} thickness={3} />
       </Box>
     );
   }
 
   return (
-    <Box>
+    <Box sx={{ width: '100%' }}>
       <DefenseWorkspaceBar />
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Box>
-          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 0.5 }}>
-            All Vulnerabilities
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            View and manage vulnerabilities from all scans
-          </Typography>
-        </Box>
-        <Button
-          variant="outlined"
-          startIcon={<DownloadIcon />}
-          onClick={(e) => setExportAnchor(e.currentTarget)}
-        >
-          Export
-        </Button>
-        <Menu
-          anchorEl={exportAnchor}
-          open={Boolean(exportAnchor)}
-          onClose={() => setExportAnchor(null)}
-        >
-          <MenuItem onClick={() => handleExport('json')}>Export as JSON</MenuItem>
-          <MenuItem onClick={() => handleExport('csv')}>Export as CSV</MenuItem>
-        </Menu>
-      </Box>
+      <PageHeader
+        eyebrow="Triage"
+        title="Vulnerabilities"
+        subtitle="Review and manage findings across all scans."
+        actions={
+          <>
+            <Button
+              variant="outlined"
+              startIcon={<DownloadIcon />}
+              onClick={(e) => setExportAnchor(e.currentTarget)}
+              sx={{ borderRadius: 2 }}
+            >
+              Export
+            </Button>
+            <Menu
+              anchorEl={exportAnchor}
+              open={Boolean(exportAnchor)}
+              onClose={() => setExportAnchor(null)}
+            >
+              <MenuItem onClick={() => handleExport('json')}>Export as JSON</MenuItem>
+              <MenuItem onClick={() => handleExport('csv')}>Export as CSV</MenuItem>
+            </Menu>
+          </>
+        }
+      />
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
           {error}
         </Alert>
       )}
 
-      {/* Statistics Cards */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+      <Grid container spacing={1.5} sx={{ mb: 3 }}>
         <Grid size={{ xs: 6, sm: 4, md: 2 }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                {stats.total}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Total
-              </Typography>
-            </CardContent>
-          </Card>
+          <StatCard label="Total" value={stats.total} icon={<BugReportIcon fontSize="small" />} />
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2 }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: 'error.main' }}>
-                {stats.critical}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Critical/High
-              </Typography>
-            </CardContent>
-          </Card>
+          <StatCard label="Critical / high" value={stats.critical} icon={<WarningIcon fontSize="small" />} tone="error" />
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2 }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: 'warning.main' }}>
-                {stats.pending}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Pending
-              </Typography>
-            </CardContent>
-          </Card>
+          <StatCard label="Pending" value={stats.pending} icon={<HourglassEmptyIcon fontSize="small" />} tone="warning" />
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2 }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: 'info.main' }}>
-                {stats.inProgress}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                In Progress
-              </Typography>
-            </CardContent>
-          </Card>
+          <StatCard label="In progress" value={stats.inProgress} icon={<SyncIcon fontSize="small" />} tone="info" />
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2 }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: 'success.main' }}>
-                {stats.fixed}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Fixed
-              </Typography>
-            </CardContent>
-          </Card>
+          <StatCard label="Fixed" value={stats.fixed} icon={<CheckCircleIcon fontSize="small" />} tone="success" />
         </Grid>
         <Grid size={{ xs: 6, sm: 4, md: 2 }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h4" sx={{ fontWeight: 700, color: 'error.main' }}>
-                {stats.failed}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Failed
-              </Typography>
-            </CardContent>
-          </Card>
+          <StatCard label="Failed" value={stats.failed} icon={<ErrorOutlineIcon fontSize="small" />} tone="error" />
         </Grid>
       </Grid>
 
-      {/* Filter Bar */}
       <FilterBar
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
@@ -240,22 +190,17 @@ export default function VulnerabilitiesPage() {
         }}
       />
 
-      {/* Vulnerabilities List */}
       {filteredVulns.length === 0 ? (
-        <Card>
-          <CardContent>
-            <Box sx={{ textAlign: 'center', py: 8 }}>
-              <Typography variant="h6" gutterBottom>
-                No Vulnerabilities Found
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {vulnerabilities.length === 0
-                  ? 'Run a scan to detect vulnerabilities'
-                  : 'Try adjusting your filters'}
-              </Typography>
-            </Box>
-          </CardContent>
-        </Card>
+        <Panel>
+          <Box sx={{ textAlign: 'center', py: 6 }}>
+            <Typography sx={{ fontWeight: 700, mb: 1 }}>No vulnerabilities found</Typography>
+            <Typography variant="body2" color="text.secondary">
+              {vulnerabilities.length === 0
+                ? 'Run a scan to detect vulnerabilities'
+                : 'Try adjusting your filters'}
+            </Typography>
+          </Box>
+        </Panel>
       ) : (
         <Stack spacing={2}>
           {filteredVulns.map((vuln) => (
