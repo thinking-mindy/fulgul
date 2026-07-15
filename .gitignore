@@ -1,16 +1,49 @@
-# Ignore everything
-*
+# Dependencies
+node_modules/
 
-# But track the .github/workflows directory
-!.github/
-!.github/**
-!.github/workflows/
-!.github/workflows/*.yml
+# Build outputs
+out/
+.next/
+dist/
+build/
 
-# Track README.md
-!README.md
+# Tauri build artifacts
+src-tauri/target/
+src-tauri/gen/
 
-# Also track .gitignore itself
-!.gitignore
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
 
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
+# Environment variables
+.env
+.env.local
+.env*.local
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Rust
+**/*.rs.bk
+Cargo.lock
+
+# But track Cargo.toml and other config files
+!Cargo.toml
+!src-tauri/Cargo.toml
+!src-tauri/Cargo.lock

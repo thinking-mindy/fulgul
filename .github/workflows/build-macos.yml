@@ -7,35 +7,16 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
-    inputs:
-      source_branch:
-        description: 'Source branch to build from'
-        required: false
-        default: 'main'
 
 jobs:
   build-macos:
     runs-on: macos-latest
     permissions:
       contents: write
-    
-    steps:
-      - name: Verify source repo token
-        env:
-          SOURCE_REPO_TOKEN: ${{ secrets.SOURCE_REPO_TOKEN }}
-        run: |
-          if [ -z "$SOURCE_REPO_TOKEN" ]; then
-            echo "::error::SOURCE_REPO_TOKEN is not set. Add a fine-grained PAT with read access to thinking-mindy/fulgul-source under Settings → Secrets and variables → Actions."
-            exit 1
-          fi
 
-      - name: Checkout source code from fulgul-source
+    steps:
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          repository: thinking-mindy/fulgul-source
-          ref: ${{ github.event.inputs.source_branch || 'main' }}
-          token: ${{ secrets.SOURCE_REPO_TOKEN }}
-          path: .
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -87,7 +68,7 @@ jobs:
             ## 🍎 macOS Builds
             - **Intel (x86_64)**: For Intel-based Macs
             - **Apple Silicon (ARM64)**: For M1/M2/M3 Macs
-            
+
             ### Installation
             1. Download the appropriate DMG for your Mac
             2. Open the DMG and drag Fulgul to Applications
@@ -99,4 +80,3 @@ jobs:
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

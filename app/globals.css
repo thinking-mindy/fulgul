@@ -1,0 +1,109 @@
+:root {
+  color-scheme: dark;
+
+  /* Thinking Minds · Fulgul palette */
+  --tm-bg-deep: hsl(222, 32%, 6%);
+  --tm-bg-base: hsl(220, 28%, 9%);
+  --tm-bg-elevated: hsl(220, 24%, 12%);
+  --tm-bg-surface: hsl(220, 22%, 14%);
+  --tm-border: hsla(145, 45%, 48%, 0.14);
+  --tm-border-strong: hsla(145, 55%, 52%, 0.28);
+  --tm-green: hsl(145, 70%, 48%);
+  --tm-green-bright: hsl(150, 80%, 58%);
+  --tm-green-muted: hsla(145, 70%, 48%, 0.12);
+  --tm-text: hsl(220, 18%, 96%);
+  --tm-text-muted: hsl(220, 12%, 62%);
+  --tm-radius: 14px;
+  --tm-radius-sm: 10px;
+  --tm-shadow: 0 4px 24px hsla(0, 0%, 0%, 0.35);
+  --tm-glow: 0 0 0 1px var(--tm-border), 0 8px 32px hsla(145, 70%, 20%, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body), 'Plus Jakarta Sans', Inter, system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--tm-bg-deep);
+  color: var(--tm-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: hsla(145, 70%, 48%, 0.35);
+  color: var(--tm-text);
+}
+
+/* Custom scrollbar — subtle, on-brand */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsla(145, 50%, 40%, 0.4) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: hsla(145, 50%, 40%, 0.35);
+  border-radius: 99px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: hsla(145, 55%, 48%, 0.55);
+}
+
+/* Ambient mesh used behind main content */
+.tm-ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.tm-ambient::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 55%;
+  height: 55%;
+  background: radial-gradient(
+    ellipse at center,
+    hsla(145, 70%, 48%, 0.07) 0%,
+    transparent 70%
+  );
+}
+
+.tm-ambient::after {
+  content: '';
+  position: absolute;
+  bottom: -15%;
+  left: -5%;
+  width: 45%;
+  height: 45%;
+  background: radial-gradient(
+    ellipse at center,
+    hsla(150, 80%, 58%, 0.05) 0%,
+    transparent 70%
+  );
+}
