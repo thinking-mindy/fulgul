@@ -18,9 +18,10 @@
     "tauri:build:mac": "tauri build --target x86_64-apple-darwin",
     "tauri:build:mac:arm": "tauri build --target aarch64-apple-darwin",
     "tauri:build:mac:universal": "tauri build --target universal-apple-darwin",
-    "tauri:build:android": "tauri build --target aarch64-linux-android",
-    "tauri:build:android:apk": "tauri build --target aarch64-linux-android",
-    "tauri:build:android:aab": "tauri build --target aarch64-linux-android"
+    "tauri:android:init": "tauri android init",
+    "tauri:build:android": "tauri android build",
+    "tauri:build:android:apk": "tauri android build --apk",
+    "tauri:build:android:aab": "tauri android build --aab"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
