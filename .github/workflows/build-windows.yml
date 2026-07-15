@@ -7,11 +7,6 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
-    inputs:
-      source_branch:
-        description: 'Source branch to build from'
-        required: false
-        default: 'main'
 
 jobs:
   build-windows-x64:
@@ -19,24 +14,10 @@ jobs:
     runs-on: windows-latest
     permissions:
       contents: write
-    
-    steps:
-      - name: Verify source repo token
-        env:
-          SOURCE_REPO_TOKEN: ${{ secrets.SOURCE_REPO_TOKEN }}
-        run: |
-          if [ -z "$SOURCE_REPO_TOKEN" ]; then
-            echo "::error::SOURCE_REPO_TOKEN is not set. Add a fine-grained PAT with read access to thinking-mindy/fulgul-source under Settings → Secrets and variables → Actions."
-            exit 1
-          fi
 
-      - name: Checkout source code from fulgul-source
+    steps:
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          repository: thinking-mindy/fulgul-source
-          ref: ${{ github.event.inputs.source_branch || 'main' }}
-          token: ${{ secrets.SOURCE_REPO_TOKEN }}
-          path: .
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -82,15 +63,15 @@ jobs:
           name: Release ${{ github.ref_name }}
           body: |
             ## 🚀 Fulgul ${{ github.ref_name }}
-            
+
             ### Windows Builds
             - **NSIS Installer**: Ready-to-install Windows installer
             - **Standalone Executable**: Portable executable file
-            
+
             ### Installation
             1. Download the NSIS installer (`.exe`) for the easiest installation
             2. Or download the standalone executable for portable use
-            
+
             ---
             *Automatically built and released via GitHub Actions*
           files: |

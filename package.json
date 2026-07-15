@@ -1,0 +1,46 @@
+{
+  "name": "fulgul",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "tauri:build:linux": "tauri build --target x86_64-unknown-linux-gnu",
+    "tauri:build:linux:deb": "tauri build --target x86_64-unknown-linux-gnu --bundles deb",
+    "tauri:build:linux:appimage": "tauri build --target x86_64-unknown-linux-gnu --bundles appimage",
+    "tauri:build:win": "tauri build --target x86_64-pc-windows-msvc",
+    "tauri:build:win:gnu": "tauri build --target x86_64-pc-windows-gnu",
+    "tauri:build:win:ia32": "tauri build --target i686-pc-windows-msvc",
+    "tauri:build:mac": "tauri build --target x86_64-apple-darwin",
+    "tauri:build:mac:arm": "tauri build --target aarch64-apple-darwin",
+    "tauri:build:mac:universal": "tauri build --target universal-apple-darwin",
+    "tauri:build:android": "tauri build --target aarch64-linux-android",
+    "tauri:build:android:apk": "tauri build --target aarch64-linux-android",
+    "tauri:build:android:aab": "tauri build --target aarch64-linux-android"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.2.0",
+    "@mui/material": "^6.2.0",
+    "@mui/material-nextjs": "^6.2.0",
+    "@tauri-apps/api": "^2.0.0",
+    "next": "^14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0",
+    "@types/node": "^22.7.5",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.5",
+    "typescript": "^5.5.4"
+  }
+}
+

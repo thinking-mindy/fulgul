@@ -7,7 +7,7 @@
 ### **Free, full-stack security platform — Blue Team defense, Red Team pentest pipelines, and real shell tooling**
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=for-the-badge)](https://github.com/thinking-mindy/fulgul)
-[![Version](https://img.shields.io/badge/Version-1.0.2-blue?style=for-the-badge)](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
+[![Version](https://img.shields.io/badge/Version-0.1.0-blue?style=for-the-badge)](https://github.com/thinking-mindy/fulgul/releases/tag/v0.1.0)
 [![Price](https://img.shields.io/badge/Price-100%25%20Free-brightgreen?style=for-the-badge)](https://github.com/thinking-mindy/fulgul)
 [![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)](https://github.com/thinking-mindy/fulgul)
 
@@ -25,16 +25,31 @@
 
 <div align="center">
 
-### 🚀 **Get Fulgul v1.0.2**
+### 🚀 **Get Fulgul v0.1.0**
 
 
-[![Download Windows](https://img.shields.io/badge/Download-Windows-blue?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
-[![Download macOS](https://img.shields.io/badge/Download-macOS-black?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
-[![Download Linux](https://img.shields.io/badge/Download-Linux-orange?style=for-the-badge&logo=linux&logoColor=white)](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
+[![Download Windows](https://img.shields.io/badge/Download-Windows-blue?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/thinking-mindy/fulgul/releases/tag/v0.1.0)
+[![Download macOS](https://img.shields.io/badge/Download-macOS-black?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/thinking-mindy/fulgul/releases/tag/v0.1.0)
+[![Download Linux](https://img.shields.io/badge/Download-Linux-orange?style=for-the-badge&logo=linux&logoColor=white)](https://github.com/thinking-mindy/fulgul/releases/tag/v0.1.0)
 
-**📦 [View All Releases](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)** • **📱 [Android Builds](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)**
+**📦 [View All Releases](https://github.com/thinking-mindy/fulgul/releases/tag/v0.1.0)** • **📱 [Android Builds](https://github.com/thinking-mindy/fulgul/releases/tag/v0.1.0)**
 
 </div>
+
+---
+
+## 🛠️ Build from Source
+
+This repository contains the full application source (Next.js frontend + Tauri/Rust backend). GitHub Actions builds installers directly from this repo.
+
+```bash
+# Prerequisites: Node.js 20+, Rust stable, platform WebView/devtools
+npm install
+npm run tauri:dev      # development
+npm run tauri:build    # production installers
+```
+
+See [docs/CI.md](docs/CI.md) for GitHub Actions build details.
 
 ---
 
@@ -387,14 +402,14 @@ If the project helps you, consider:
 
 #### Option 1: NSIS Installer (Recommended)
 
-1. **Download** `fulgul_1.0.2_x64-setup.exe` from [Releases](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
+1. **Download** `fulgul_0.1.0_x64-setup.exe` from [Releases](https://github.com/thinking-mindy/fulgul/releases/tag/v0.1.0)
 2. **Run** the installer
 3. **Follow** the installation wizard
 4. **Launch** from Start menu or desktop shortcut
 
 #### Option 2: MSI Installer
 
-1. **Download** `fulgul_1.0.2_x64_en-US.msi` from [Releases](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
+1. **Download** `fulgul_0.1.0_x64_en-US.msi` from [Releases](https://github.com/thinking-mindy/fulgul/releases/tag/v0.1.0)
 2. **Double-click** to install
 3. **Launch** from Start menu
 
@@ -411,14 +426,14 @@ If the project helps you, consider:
 
 #### For Intel Macs
 
-1. **Download** `fulgul_1.0.2_x64.dmg` from [Releases](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
+1. **Download** `fulgul_0.1.0_x64.dmg` from [Releases](https://github.com/thinking-mindy/fulgul/releases/tag/v0.1.0)
 2. **Open** the DMG file
 3. **Drag** "Fulgul" to Applications folder
 4. **Eject** the DMG
 
 #### For Apple Silicon (M1/M2/M3)
 
-1. **Download** `fulgul_1.0.2_arm64.dmg` from [Releases](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.2)
+1. **Download** `fulgul_0.1.0_arm64.dmg` from [Releases](https://github.com/thinking-mindy/fulgul/releases/tag/v0.1.0)
 2. **Open** the DMG file
 3. **Drag** "Fulgul" to Applications folder
 4. **Eject** the DMG
@@ -447,23 +462,23 @@ xattr -cr /Applications/Fulgul.app
 
 ```bash
 # Download
-wget https://github.com/thinking-mindy/fulgul/releases/download/v1.0.2/fulgul_1.0.2_amd64.AppImage
+wget https://github.com/thinking-mindy/fulgul/releases/download/v0.1.0/fulgul_0.1.0_amd64.AppImage
 
 # Make executable
-chmod +x fulgul_1.0.2_amd64.AppImage
+chmod +x fulgul_0.1.0_amd64.AppImage
 
 # Run
-./fulgul_1.0.2_amd64.AppImage
+./fulgul_0.1.0_amd64.AppImage
 ```
 
 #### Debian/Ubuntu (.deb)
 
 ```bash
 # Download
-wget https://github.com/thinking-mindy/fulgul/releases/download/v1.0.2/fulgul_1.0.2_amd64.deb
+wget https://github.com/thinking-mindy/fulgul/releases/download/v0.1.0/fulgul_0.1.0_amd64.deb
 
 # Install
-sudo dpkg -i fulgul_1.0.2_amd64.deb
+sudo dpkg -i fulgul_0.1.0_amd64.deb
 sudo apt-get install -f  # Fix dependencies if needed
 
 # Launch
@@ -474,12 +489,12 @@ fulgul
 
 ```bash
 # Download
-wget https://github.com/thinking-mindy/fulgul/releases/download/v1.0.2/fulgul_1.0.2.x86_64.rpm
+wget https://github.com/thinking-mindy/fulgul/releases/download/v0.1.0/fulgul_0.1.0.x86_64.rpm
 
 # Install
-sudo rpm -i fulgul_1.0.2.x86_64.rpm
+sudo rpm -i fulgul_0.1.0.x86_64.rpm
 # Or with dnf
-sudo dnf install fulgul_1.0.2.x86_64.rpm
+sudo dnf install fulgul_0.1.0.x86_64.rpm
 
 # Launch
 fulgul
@@ -879,7 +894,7 @@ Some features require elevated permissions:
 
 </details>
 
-### 🎯 Version 1.0.2 (Current Release)
+### 🎯 Version 0.1.0 (Current Release)
 
 <details>
 <summary><b>✨ Core Features</b></summary>
