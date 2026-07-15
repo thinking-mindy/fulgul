@@ -58,7 +58,12 @@ Also included: security score dashboard, scan history, and an integrated Securit
 
 ## Download
 
-Grab the latest installer from **[Releases](https://github.com/thinking-mindy/fulgul/releases)**:
+Grab installers from **[Releases](https://github.com/thinking-mindy/fulgul/releases)**:
+
+| Release | When |
+|---------|------|
+| Version tags (`v0.1.0`, …) | Stable downloads |
+| **Continuous** | Latest successful build from `main` |
 
 | Platform | Package |
 |----------|---------|
