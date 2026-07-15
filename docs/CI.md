@@ -9,7 +9,7 @@ Builds Windows NSIS installer (EXE) on Windows runners.
 
 **Triggers:**
 - Push to `main`
-- Push to tags matching `v*` (e.g., `v0.1.0`)
+- Push to tags matching `v*` (e.g., `v1.0.3`)
 - Manual trigger via `workflow_dispatch`
 
 **Outputs:**
@@ -69,13 +69,13 @@ Find it under **Releases → Continuous build**.
 
 1. Create and push a version tag:
    ```bash
-   git tag v0.1.0
-   git push origin v0.1.0
+   git tag v1.0.3
+   git push origin v1.0.3
    ```
 
 2. GitHub Actions will:
    - Build for all platforms
-   - Create a versioned GitHub Release (`v0.1.0`)
+   - Create a versioned GitHub Release (`v1.0.3`)
    - Mark it as the latest release
    - Attach installers from each platform workflow
 

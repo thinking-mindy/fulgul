@@ -42,7 +42,7 @@ let lineId = 0;
 const nextId = () => ++lineId;
 
 const WELCOME: TerminalLine[] = [
-  { id: nextId(), kind: 'banner', text: 'Fulgul Security Shell v0.1.0 — Linux x86_64' },
+  { id: nextId(), kind: 'banner', text: 'Fulgul Security Shell v1.0.3 — Linux x86_64' },
   { id: nextId(), kind: 'dim', text: 'Authorized testing only. Commands run on this host (120s timeout).' },
   { id: nextId(), kind: 'dim', text: "Type 'help' for shortcuts · ↑↓ history · Ctrl+L clear" },
   { id: nextId(), kind: 'output', text: '' },
