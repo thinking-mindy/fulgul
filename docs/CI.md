@@ -46,12 +46,17 @@ Builds macOS DMG files for Intel and Apple Silicon.
 - `fulgul-macos-arm`: Apple Silicon DMG
 
 ### 4. Build Android (`build-android.yml`)
-Builds Android APK / AAB.
+Builds Android APK / AAB with the Android NDK (`nttld/setup-ndk`) and `tauri android build`.
 
 **Triggers:**
 - Push to `main`
 - Push to tags matching `v*`
 - Manual trigger with build type selection
+
+**Notes:**
+- Installs NDK r26d and sets `NDK_HOME` / `ANDROID_NDK_HOME`
+- Restores broken NDK clang symlinks on Linux runners
+- Runs `tauri android init` then `tauri android build --apk` / `--aab`
 
 ## Setting Up Secrets (Optional)
 

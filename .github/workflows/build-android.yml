@@ -33,28 +33,43 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'gradle'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r26d
+          link-to-sdk: true
+
+      # Broken relative symlinks in the NDK LLVM bin dir break cargo/cc-rs on Linux runners.
+      # See: https://github.com/nttld/setup-ndk/issues/518 and tauri-apps/tauri CI.
+      - name: Restore Android NDK symlinks
+        run: |
+          directory="${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin"
+          find "$directory" -type l | while read -r link; do
+            current_target=$(readlink "$link")
+            new_target="$directory/$(basename "$current_target")"
+            ln -sf "$new_target" "$link"
+          done
+          # Ensure clang wrappers used by ring/cc-rs are discoverable
+          echo "$directory" >> "$GITHUB_PATH"
+          ls "$directory"/aarch64-linux-android*-clang | head
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: |
-            aarch64-linux-android
-            armv7-linux-androideabi
-            i686-linux-android
-            x86_64-linux-android
-
-      - name: Install Android NDK
-        run: |
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "ndk;25.2.9519653"
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
 
       - name: Install dependencies
         run: npm install
@@ -62,17 +77,30 @@ jobs:
       - name: Build frontend
         run: npm run build
 
+      - name: Init Android project
+        run: npx tauri android init
+        env:
+          NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
+
       - name: Build Android APK
         if: github.event.inputs.build_type == 'apk' || github.event.inputs.build_type == 'all' || github.event_name == 'push'
-        run: npm run tauri:build:android:apk
+        run: npx tauri android build --apk
         env:
+          NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
       - name: Build Android AAB
-        if: github.event.inputs.build_type == 'aab' || github.event.inputs.build_type == 'all' || github.event_name == 'push'
-        run: npm run tauri:build:android:aab
+        if: github.event.inputs.build_type == 'aab' || github.event.inputs.build_type == 'all'
+        run: npx tauri android build --aab
         env:
+          NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
@@ -81,15 +109,21 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: fulgul-android-apk
-          path: src-tauri/target/aarch64-linux-android/release/bundle/apk/*.apk
+          path: |
+            src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+            src-tauri/target/**/apk/**/*.apk
+          if-no-files-found: warn
           retention-days: 30
 
       - name: Upload Android AAB
-        if: github.event.inputs.build_type == 'aab' || github.event.inputs.build_type == 'all' || github.event_name == 'push'
+        if: github.event.inputs.build_type == 'aab' || github.event.inputs.build_type == 'all'
         uses: actions/upload-artifact@v4
         with:
           name: fulgul-android-aab
-          path: src-tauri/target/aarch64-linux-android/release/bundle/aab/*.aab
+          path: |
+            src-tauri/gen/android/app/build/outputs/bundle/**/*.aab
+            src-tauri/target/**/aab/**/*.aab
+          if-no-files-found: warn
           retention-days: 30
 
       - name: Create Release (on tag)
@@ -99,16 +133,16 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           body: |
-            ## 📱 Android Builds
-            - **APK**: Direct installation file for Android devices
-            - **AAB**: Android App Bundle for Google Play Store distribution
+            ## Android Builds
+            - **APK**: Direct installation for Android devices
+            - **AAB**: App Bundle for Google Play Store
 
             ### Installation
-            - **APK**: Enable "Install from unknown sources" and install the APK
-            - **AAB**: Upload to Google Play Console for distribution
+            - **APK**: Enable install from unknown sources, then install the APK
+            - **AAB**: Upload to Google Play Console
           files: |
-            src-tauri/target/aarch64-linux-android/release/bundle/apk/*.apk
-            src-tauri/target/aarch64-linux-android/release/bundle/aab/*.aab
+            src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+            src-tauri/gen/android/app/build/outputs/bundle/**/*.aab
           draft: false
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
         env:
