@@ -45,40 +45,60 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: fulgul-windows-x64-nsis
-          path: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+          path: |
+            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/nsis/*.exe
+          if-no-files-found: warn
           retention-days: 30
 
       - name: Upload Windows 64-bit Standalone Executable
         uses: actions/upload-artifact@v4
         with:
           name: fulgul-windows-x64-exe
-          path: src-tauri/target/x86_64-pc-windows-msvc/release/fulgul.exe
+          path: |
+            src-tauri/target/x86_64-pc-windows-msvc/release/fulgul.exe
+            src-tauri/target/release/fulgul.exe
+          if-no-files-found: warn
           retention-days: 30
 
-      - name: Create Release (on tag)
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v1
+      - name: Resolve release tag
+        id: release
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            echo "name=Release ${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            echo "latest=true" >> "$GITHUB_OUTPUT"
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          else
+            VERSION=$(node -p "require('./package.json').version")
+            echo "tag=continuous" >> "$GITHUB_OUTPUT"
+            echo "name=Continuous build (v${VERSION})" >> "$GITHUB_OUTPUT"
+            echo "latest=false" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish Windows assets to GitHub Release
+        if: success() && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch')
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
+          tag_name: ${{ steps.release.outputs.tag }}
+          name: ${{ steps.release.outputs.name }}
           body: |
-            ## 🚀 Fulgul ${{ github.ref_name }}
+            ## Windows builds
+            - **NSIS installer** (`.exe`)
+            - **Standalone** `fulgul.exe`
 
-            ### Windows Builds
-            - **NSIS Installer**: Ready-to-install Windows installer
-            - **Standalone Executable**: Portable executable file
-
-            ### Installation
-            1. Download the NSIS installer (`.exe`) for the easiest installation
-            2. Or download the standalone executable for portable use
-
-            ---
-            *Automatically built and released via GitHub Actions*
+            Commit `${{ github.sha }}` · branch/tag `${{ github.ref_name }}`
           files: |
             src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
             src-tauri/target/x86_64-pc-windows-msvc/release/fulgul.exe
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/fulgul.exe
           draft: false
-          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
-          generate_release_notes: true
+          make_latest: ${{ steps.release.outputs.latest }}
+          fail_on_unmatched_files: false
+          generate_release_notes: ${{ startsWith(github.ref, 'refs/tags/') }}
+          prerelease: ${{ steps.release.outputs.prerelease == 'true' || contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -50,33 +50,54 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: fulgul-macos-intel
-          path: src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
+          path: |
+            src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
+            src-tauri/target/release/bundle/dmg/*.dmg
+          if-no-files-found: warn
 
       - name: Upload Apple Silicon DMG
         uses: actions/upload-artifact@v4
         with:
           name: fulgul-macos-arm
-          path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+          path: |
+            src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+          if-no-files-found: warn
 
-      - name: Create Release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v1
+      - name: Resolve release tag
+        id: release
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            echo "name=Release ${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            echo "latest=true" >> "$GITHUB_OUTPUT"
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          else
+            VERSION=$(node -p "require('./package.json').version")
+            echo "tag=continuous" >> "$GITHUB_OUTPUT"
+            echo "name=Continuous build (v${VERSION})" >> "$GITHUB_OUTPUT"
+            echo "latest=false" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish macOS assets to GitHub Release
+        if: success() && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch')
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
+          tag_name: ${{ steps.release.outputs.tag }}
+          name: ${{ steps.release.outputs.name }}
           body: |
-            ## 🍎 macOS Builds
-            - **Intel (x86_64)**: For Intel-based Macs
-            - **Apple Silicon (ARM64)**: For M1/M2/M3 Macs
+            ## macOS builds
+            - **Intel (x86_64)** `.dmg`
+            - **Apple Silicon (arm64)** `.dmg`
 
-            ### Installation
-            1. Download the appropriate DMG for your Mac
-            2. Open the DMG and drag Fulgul to Applications
-            3. On first launch, right-click and select "Open" (macOS security)
+            Commit `${{ github.sha }}` · branch/tag `${{ github.ref_name }}`
           files: |
             src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
             src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
           draft: false
-          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+          make_latest: ${{ steps.release.outputs.latest }}
+          fail_on_unmatched_files: false
+          prerelease: ${{ steps.release.outputs.prerelease == 'true' || contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

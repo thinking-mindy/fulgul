@@ -59,7 +59,13 @@ Code signing secrets are optional. Builds work without them, but binaries won't 
 
 ## Creating a Release
 
-### Automatic Release (Recommended)
+### Continuous builds (automatic on `main`)
+
+Every successful build on `main` (or a manual workflow run) publishes/updates the **`continuous`** GitHub Release with the latest installers from Windows, Linux, and macOS.
+
+Find it under **Releases → Continuous build**.
+
+### Versioned release (recommended for public downloads)
 
 1. Create and push a version tag:
    ```bash
@@ -67,19 +73,19 @@ Code signing secrets are optional. Builds work without them, but binaries won't 
    git push origin v0.1.0
    ```
 
-2. GitHub Actions will automatically:
+2. GitHub Actions will:
    - Build for all platforms
-   - Create a GitHub Release
-   - Attach all build artifacts
+   - Create a versioned GitHub Release (`v0.1.0`)
+   - Mark it as the latest release
+   - Attach installers from each platform workflow
 
-### Manual Release
+### Manual build
 
-1. Go to **Actions** tab in your repository
-2. Select the workflow you want to run
-3. Click **Run workflow**
-4. Choose branch and options
-5. Click **Run workflow**
+1. Go to **Actions**
+2. Select Build Windows / Linux / macOS
+3. **Run workflow**
 
+Successful manual runs also upload to the `continuous` release.
 ## Downloading Builds
 
 ### From GitHub Releases

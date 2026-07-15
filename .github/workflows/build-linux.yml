@@ -77,7 +77,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: fulgul-linux-deb
-          path: src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/*.deb
+          path: |
+            src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/*.deb
+            src-tauri/target/release/bundle/deb/*.deb
+          if-no-files-found: warn
           retention-days: 30
 
       - name: Upload AppImage
@@ -85,27 +88,49 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: fulgul-linux-appimage
-          path: src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage/*.AppImage
+          path: |
+            src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage/*.AppImage
+            src-tauri/target/release/bundle/appimage/*.AppImage
+          if-no-files-found: warn
           retention-days: 30
 
-      - name: Create Release (on tag)
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          body: |
-            ## 🐧 Linux Builds
-            - **DEB Package**: For Debian/Ubuntu-based distributions
-            - **AppImage**: Portable application that runs on most Linux distributions
+      - name: Resolve release tag
+        id: release
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            echo "name=Release ${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            echo "latest=true" >> "$GITHUB_OUTPUT"
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          else
+            VERSION=$(node -p "require('./package.json').version")
+            echo "tag=continuous" >> "$GITHUB_OUTPUT"
+            echo "name=Continuous build (v${VERSION})" >> "$GITHUB_OUTPUT"
+            echo "latest=false" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          fi
 
-            ### Installation
-            - **DEB**: `sudo dpkg -i fulgul_*.deb`
-            - **AppImage**: `chmod +x fulgul_*.AppImage && ./fulgul_*.AppImage`
+      - name: Publish Linux assets to GitHub Release
+        if: success() && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release.outputs.tag }}
+          name: ${{ steps.release.outputs.name }}
+          body: |
+            ## Linux builds
+            - **DEB** for Debian/Ubuntu
+            - **AppImage** for most distributions
+
+            Commit `${{ github.sha }}` · branch/tag `${{ github.ref_name }}`
           files: |
             src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/*.deb
             src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage/*.AppImage
+            src-tauri/target/release/bundle/deb/*.deb
+            src-tauri/target/release/bundle/appimage/*.AppImage
           draft: false
-          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+          make_latest: ${{ steps.release.outputs.latest }}
+          fail_on_unmatched_files: false
+          prerelease: ${{ steps.release.outputs.prerelease == 'true' || contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
