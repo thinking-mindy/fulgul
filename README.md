@@ -65,7 +65,6 @@ Grab the latest installer from **[Releases](https://github.com/thinking-mindy/fu
 | Windows | NSIS `.exe` / MSI |
 | macOS | Intel / Apple Silicon `.dmg` |
 | Linux | `.deb` / AppImage / `.rpm` |
-| Android | APK / AAB (when published) |
 
 **macOS first launch:** right-click → Open, or run `xattr -cr /Applications/Fulgul.app`.
 
