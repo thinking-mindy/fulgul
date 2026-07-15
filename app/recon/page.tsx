@@ -8,7 +8,6 @@ import {
   TextField,
   Button,
   Stack,
-  Chip,
   Alert,
   CircularProgress,
   alpha,
@@ -26,8 +25,8 @@ import PublicIcon from '@mui/icons-material/Public';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { invoke } from '@tauri-apps/api/core';
 import PageHeader from '../../components/ui/PageHeader';
-import GlassCard from '../../components/ui/GlassCard';
 import StatCard from '../../components/ui/StatCard';
+import SectionLabel, { Panel } from '../../components/ui/SectionLabel';
 import WorkspaceBar from '../../components/pentest/WorkspaceBar';
 import type { ReconResult, PentestWorkspace } from '../../types/tauri';
 
@@ -38,24 +37,28 @@ const TOOLS: {
   label: string;
   desc: string;
   icon: React.ReactNode;
-  color: string;
   placeholder: string;
   port?: boolean;
 }[] = [
-  { id: 'dns', label: 'DNS Enum', desc: 'A, MX, NS, TXT records', icon: <DnsIcon />, color: '#3b82f6', placeholder: 'example.com' },
-  { id: 'whois', label: 'WHOIS', desc: 'Registrar & domain intel', icon: <PublicIcon />, color: '#06b6d4', placeholder: 'example.com' },
-  { id: 'ssl', label: 'TLS / SSL', desc: 'Certificate & expiry check', icon: <HttpsIcon />, color: '#8b5cf6', placeholder: 'host.example.com', port: true },
-  { id: 'http_headers', label: 'HTTP Headers', desc: 'Security header analysis', icon: <HttpIcon />, color: '#f59e0b', placeholder: 'https://target.example.com' },
-  { id: 'banner', label: 'Banner Grab', desc: 'Service fingerprint', icon: <RouterIcon />, color: '#ef4444', placeholder: '192.168.1.1', port: true },
+  { id: 'dns', label: 'DNS Enum', desc: 'A, MX, NS, TXT records', icon: <DnsIcon fontSize="small" />, placeholder: 'example.com' },
+  { id: 'whois', label: 'WHOIS', desc: 'Registrar & domain intel', icon: <PublicIcon fontSize="small" />, placeholder: 'example.com' },
+  { id: 'ssl', label: 'TLS / SSL', desc: 'Certificate & expiry check', icon: <HttpsIcon fontSize="small" />, placeholder: 'host.example.com', port: true },
+  { id: 'http_headers', label: 'HTTP Headers', desc: 'Security header analysis', icon: <HttpIcon fontSize="small" />, placeholder: 'https://target.example.com' },
+  { id: 'banner', label: 'Banner Grab', desc: 'Service fingerprint', icon: <RouterIcon fontSize="small" />, placeholder: '192.168.1.1', port: true },
 ];
 
 const severityColor = (s: string) => {
   switch (s) {
-    case 'critical': return '#ef4444';
-    case 'high': return '#f97316';
-    case 'medium': return '#eab308';
-    case 'low': return '#3b82f6';
-    default: return '#64748b';
+    case 'critical':
+      return '#ef4444';
+    case 'high':
+      return '#f97316';
+    case 'medium':
+      return '#eab308';
+    case 'low':
+      return '#3b82f6';
+    default:
+      return '#64748b';
   }
 };
 
@@ -69,9 +72,11 @@ export default function ReconHubPage() {
   const [history, setHistory] = useState<ReconResult[]>([]);
 
   useEffect(() => {
-    invoke<PentestWorkspace>('get_pentest_workspace').then((ws) => {
-      if (ws.primaryTarget && !target) setTarget(ws.primaryTarget);
-    }).catch(() => {});
+    invoke<PentestWorkspace>('get_pentest_workspace')
+      .then((ws) => {
+        if (ws.primaryTarget && !target) setTarget(ws.primaryTarget);
+      })
+      .catch(() => {});
   }, [target]);
 
   const tool = TOOLS.find((t) => t.id === active)!;
@@ -113,33 +118,31 @@ export default function ReconHubPage() {
   };
 
   return (
-    <Box>
+    <Box sx={{ width: '100%' }}>
       <PageHeader
-        eyebrow="Offensive · Recon"
-        title="Map the surface."
-        titleAccent="Before you strike."
-        subtitle="OSINT and surface mapping — DNS, WHOIS, TLS, HTTP headers, banners. Every run is logged to Engagement Reports."
-        chips={['DNS', 'TLS', 'Headers', 'Auto-logged']}
+        eyebrow="Phase 2 · Recon"
+        title="Surface mapping"
+        subtitle="DNS, WHOIS, TLS, headers, and banners — logged for reports."
       />
 
       <WorkspaceBar />
 
       <Alert severity="warning" sx={{ mb: 3, borderRadius: 2 }}>
-        Authorized targets only. Every recon run is saved to your pentest activity log for reporting.
+        Authorized targets only. Every recon run is saved to your pentest activity log.
       </Alert>
 
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+      <Grid container spacing={1.5} sx={{ mb: 3 }}>
         <Grid size={{ xs: 6, md: 3 }}>
-          <StatCard label="Tools" value={TOOLS.length} icon={<TravelExploreIcon />} tone="primary" />
+          <StatCard label="Tools" value={TOOLS.length} icon={<TravelExploreIcon fontSize="small" />} tone="primary" />
         </Grid>
         <Grid size={{ xs: 6, md: 3 }}>
-          <StatCard label="Session runs" value={history.length} icon={<DnsIcon />} tone="info" />
+          <StatCard label="Session runs" value={history.length} icon={<DnsIcon fontSize="small" />} tone="info" />
         </Grid>
         <Grid size={{ xs: 6, md: 3 }}>
           <StatCard
             label="Last findings"
             value={result?.findings.length ?? '—'}
-            icon={<HttpsIcon />}
+            icon={<HttpsIcon fontSize="small" />}
             tone="warning"
           />
         </Grid>
@@ -147,58 +150,71 @@ export default function ReconHubPage() {
           <StatCard
             label="Duration"
             value={result ? `${result.durationMs}ms` : '—'}
-            icon={<RouterIcon />}
+            icon={<RouterIcon fontSize="small" />}
             tone="success"
           />
         </Grid>
       </Grid>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 4 }}>
-          <GlassCard>
-            <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2 }}>
-              Recon toolkit
-            </Typography>
+          <SectionLabel>Toolkit</SectionLabel>
+          <Panel>
             <Stack spacing={1}>
-              {TOOLS.map((t) => (
-                <Box
-                  key={t.id}
-                  onClick={() => { setActive(t.id); setResult(null); setError(null); }}
-                  sx={{
-                    p: 1.5,
-                    borderRadius: 2,
-                    cursor: 'pointer',
-                    border: '1px solid',
-                    borderColor: active === t.id ? t.color : 'divider',
-                    bgcolor: active === t.id ? alpha(t.color, 0.08) : 'transparent',
-                    transition: 'all 0.2s',
-                    '&:hover': { borderColor: t.color, bgcolor: alpha(t.color, 0.05) },
-                  }}
-                >
-                  <Stack direction="row" spacing={1.5} alignItems="center">
-                    <Box sx={{ color: t.color }}>{t.icon}</Box>
-                    <Box>
-                      <Typography variant="body2" fontWeight={600}>{t.label}</Typography>
-                      <Typography variant="caption" color="text.secondary">{t.desc}</Typography>
-                    </Box>
-                  </Stack>
-                </Box>
-              ))}
+              {TOOLS.map((t) => {
+                const selected = active === t.id;
+                return (
+                  <Box
+                    key={t.id}
+                    onClick={() => {
+                      setActive(t.id);
+                      setResult(null);
+                      setError(null);
+                    }}
+                    sx={{
+                      p: 1.5,
+                      borderRadius: 2,
+                      cursor: 'pointer',
+                      border: '1px solid',
+                      borderColor: selected ? 'primary.main' : 'divider',
+                      bgcolor: selected ? (theme) => alpha(theme.palette.primary.main, 0.06) : 'transparent',
+                      transition: 'border-color 0.2s ease, background-color 0.2s ease',
+                      '&:hover': {
+                        borderColor: 'primary.main',
+                        bgcolor: (theme) => alpha(theme.palette.primary.main, 0.04),
+                      },
+                    }}
+                  >
+                    <Stack direction="row" spacing={1.5} alignItems="center">
+                      <Box sx={{ color: selected ? 'primary.main' : 'text.secondary' }}>{t.icon}</Box>
+                      <Box>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {t.label}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {t.desc}
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </Box>
+                );
+              })}
             </Stack>
-          </GlassCard>
+          </Panel>
         </Grid>
 
         <Grid size={{ xs: 12, md: 8 }}>
-          <GlassCard highlight>
+          <SectionLabel>{tool.label}</SectionLabel>
+          <Panel>
             <Stack spacing={2}>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Box sx={{ color: tool.color }}>{tool.icon}</Box>
-                <Typography variant="h6">{tool.label}</Typography>
-              </Stack>
+              <Typography variant="caption" color="text.secondary">
+                {tool.desc}
+              </Typography>
 
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                 <TextField
                   fullWidth
+                  size="small"
                   label="Target"
                   placeholder={tool.placeholder}
                   value={target}
@@ -207,6 +223,7 @@ export default function ReconHubPage() {
                 />
                 {tool.port && (
                   <TextField
+                    size="small"
                     label="Port"
                     value={port}
                     onChange={(e) => setPort(e.target.value)}
@@ -218,25 +235,23 @@ export default function ReconHubPage() {
                   startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <PlayArrowIcon />}
                   onClick={runRecon}
                   disabled={loading}
-                  sx={{ minWidth: 120, alignSelf: { sm: 'center' } }}
+                  sx={{ minWidth: 120, alignSelf: { sm: 'center' }, borderRadius: 2 }}
                 >
                   Run
                 </Button>
               </Stack>
 
-              {error && <Alert severity="error">{error}</Alert>}
+              {error && (
+                <Alert severity="error" sx={{ borderRadius: 2 }}>
+                  {error}
+                </Alert>
+              )}
 
               {result && (
                 <Box>
-                  <Stack direction="row" spacing={1} sx={{ mb: 2 }} flexWrap="wrap">
-                    <Chip label={result.kind} size="small" color="primary" variant="outlined" />
-                    <Chip
-                      label={result.success ? 'Success' : 'No data'}
-                      size="small"
-                      color={result.success ? 'success' : 'default'}
-                    />
-                    <Chip label={`${result.durationMs}ms`} size="small" variant="outlined" />
-                  </Stack>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1.5 }}>
+                    {result.kind} · {result.success ? 'Success' : 'No data'} · {result.durationMs}ms
+                  </Typography>
 
                   {result.findings.length > 0 ? (
                     <List dense disablePadding>
@@ -260,7 +275,9 @@ export default function ReconHubPage() {
                       ))}
                     </List>
                   ) : (
-                    <Typography color="text.secondary" variant="body2">No structured findings — see raw output.</Typography>
+                    <Typography color="text.secondary" variant="body2">
+                      No structured findings — see raw output.
+                    </Typography>
                   )}
 
                   {result.rawOutput && (
@@ -274,6 +291,8 @@ export default function ReconHubPage() {
                         sx={{
                           p: 2,
                           borderRadius: 2,
+                          border: '1px solid',
+                          borderColor: 'divider',
                           bgcolor: 'action.hover',
                           fontSize: '0.75rem',
                           overflow: 'auto',
@@ -289,7 +308,7 @@ export default function ReconHubPage() {
                 </Box>
               )}
             </Stack>
-          </GlassCard>
+          </Panel>
         </Grid>
       </Grid>
     </Box>

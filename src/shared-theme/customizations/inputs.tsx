@@ -59,33 +59,33 @@ export const inputsCustomizations: Components<Theme> = {
               color: '#ffffff',
               backgroundColor: brand[500],
               backgroundImage: 'none',
-              boxShadow: `0 1px 2px ${alpha(brand[900], 0.15)}`,
+              boxShadow: 'none',
               border: `1px solid ${brand[600]}`,
               '&:hover': {
                 backgroundColor: brand[600],
                 backgroundImage: 'none',
-                boxShadow: `0 2px 8px ${alpha(brand[600], 0.35)}`,
+                boxShadow: 'none',
               },
               '&:active': {
                 backgroundColor: brand[700],
                 backgroundImage: 'none',
-                boxShadow: `inset 0 1px 2px ${alpha(brand[900], 0.25)}`,
+                boxShadow: 'none',
               },
               ...theme.applyStyles('dark', {
                 color: '#ffffff',
                 backgroundColor: brand[500],
                 backgroundImage: 'none',
-                boxShadow: `0 1px 3px ${alpha('#000000', 0.4)}`,
+                boxShadow: 'none',
                 border: `1px solid ${brand[600]}`,
                 '&:hover': {
                   backgroundColor: brand[600],
                   backgroundImage: 'none',
-                  boxShadow: `0 2px 10px ${alpha(brand[500], 0.4)}`,
+                  boxShadow: 'none',
                 },
                 '&:active': {
                   backgroundColor: brand[700],
                   backgroundImage: 'none',
-                  boxShadow: `inset 0 2px 4px ${alpha('#000000', 0.35)}`,
+                  boxShadow: 'none',
                 },
               }),
             },
@@ -99,33 +99,33 @@ export const inputsCustomizations: Components<Theme> = {
               color: '#ffffff',
               backgroundColor: brand[600],
               backgroundImage: 'none',
-              boxShadow: `0 1px 2px ${alpha(brand[900], 0.12)}`,
+              boxShadow: 'none',
               border: `1px solid ${brand[700]}`,
               '&:hover': {
                 backgroundColor: brand[700],
                 backgroundImage: 'none',
-                boxShadow: `0 2px 8px ${alpha(brand[700], 0.3)}`,
+                boxShadow: 'none',
               },
               '&:active': {
                 backgroundColor: brand[800],
                 backgroundImage: 'none',
-                boxShadow: `inset 0 1px 2px ${alpha(brand[900], 0.2)}`,
+                boxShadow: 'none',
               },
               ...theme.applyStyles('dark', {
                 color: '#ffffff',
                 backgroundColor: brand[600],
                 backgroundImage: 'none',
-                boxShadow: `0 1px 3px ${alpha('#000000', 0.45)}`,
+                boxShadow: 'none',
                 border: `1px solid ${brand[700]}`,
                 '&:hover': {
                   backgroundColor: brand[700],
                   backgroundImage: 'none',
-                  boxShadow: `0 2px 10px ${alpha(brand[600], 0.45)}`,
+                  boxShadow: 'none',
                 },
                 '&:active': {
                   backgroundColor: brand[800],
                   backgroundImage: 'none',
-                  boxShadow: `inset 0 2px 4px ${alpha('#000000', 0.35)}`,
+                  boxShadow: 'none',
                 },
               }),
             },
@@ -399,7 +399,7 @@ export const inputsCustomizations: Components<Theme> = {
     styleOverrides: {
       root: ({ theme }) => ({
         borderRadius: '10px',
-        boxShadow: `0 4px 16px ${alpha(gray[400], 0.2)}`,
+        boxShadow: 'none',
         [`& .${toggleButtonGroupClasses.selected}`]: {
           color: brand[500],
         },
@@ -407,7 +407,7 @@ export const inputsCustomizations: Components<Theme> = {
           [`& .${toggleButtonGroupClasses.selected}`]: {
             color: '#fff',
           },
-          boxShadow: `0 4px 16px ${alpha(brand[700], 0.5)}`,
+          boxShadow: 'none',
         }),
       }),
     },
@@ -421,7 +421,7 @@ export const inputsCustomizations: Components<Theme> = {
         fontWeight: 500,
         ...theme.applyStyles('dark', {
           color: gray[400],
-          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.5)',
+          boxShadow: 'none',
           [`&.${toggleButtonClasses.selected}`]: {
             color: brand[300],
           },

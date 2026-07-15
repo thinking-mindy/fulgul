@@ -36,14 +36,27 @@ export default function SecurityScoreGauge({ score, grade, compact = false }: Se
       <Box sx={{ position: 'relative', display: 'inline-flex', mb: compact ? 1 : 2 }}>
         <CircularProgress
           variant="determinate"
+          value={100}
+          size={size}
+          thickness={thickness}
+          sx={{
+            color: 'action.hover',
+            position: 'absolute',
+            transform: 'rotate(-90deg)',
+          }}
+        />
+        <CircularProgress
+          variant="determinate"
           value={safeScore}
           size={size}
           thickness={thickness}
           sx={{
             color: `${getColor()}.main`,
             transform: 'rotate(-90deg)',
-            bgcolor: compact ? 'action.hover' : undefined,
             borderRadius: '50%',
+            [`& .MuiCircularProgress-circle`]: {
+              strokeLinecap: 'round',
+            },
           }}
         />
         <Box
@@ -62,26 +75,28 @@ export default function SecurityScoreGauge({ score, grade, compact = false }: Se
           <Typography
             variant={compact ? 'h4' : 'h2'}
             component="div"
-            sx={{ fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1 }}
+            sx={{ fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}
           >
-            {safeScore}
+            {safeScore || '—'}
           </Typography>
-          <Typography variant="caption" color="text.secondary">
-            / 100
+          <Typography variant="caption" color="text.secondary" sx={{ letterSpacing: '0.06em' }}>
+            SCORE
           </Typography>
         </Box>
       </Box>
-      <Typography
-        variant={compact ? 'subtitle2' : 'h5'}
-        sx={{
-          fontWeight: 700,
-          color: getGradeColor(),
-          textTransform: 'uppercase',
-          letterSpacing: '0.06em',
-        }}
-      >
-        {grade || 'Unknown'}
-      </Typography>
+      {grade && (
+        <Typography
+          variant={compact ? 'subtitle2' : 'h5'}
+          sx={{
+            fontWeight: 700,
+            color: getGradeColor(),
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+          }}
+        >
+          {grade}
+        </Typography>
+      )}
     </Box>
   );
 }

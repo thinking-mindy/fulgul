@@ -1,12 +1,9 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import Grid from '@mui/material/Grid2';
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
   Alert,
   IconButton,
   Chip,
@@ -16,7 +13,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Button,
   Stack,
   Dialog,
@@ -31,14 +27,18 @@ import {
   ListItem,
   ListItemText,
   Divider,
+  CircularProgress,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import DownloadIcon from '@mui/icons-material/Download';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { invoke } from '@tauri-apps/api/core';
 import type { ScanComparison, StoredScanResult } from '../../types/tauri';
 import { normalizeScanHistory } from '../../lib/scan';
 import { useRouter } from 'next/navigation';
+import PageHeader from '../../components/ui/PageHeader';
+import { Panel } from '../../components/ui/SectionLabel';
 
 export default function ScanHistoryPage() {
   const [history, setHistory] = useState<StoredScanResult[]>([]);
@@ -125,100 +125,95 @@ export default function ScanHistoryPage() {
 
   if (loading) {
     return (
-      <Box>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700, mb: 4 }}>
-          Scan History
-        </Typography>
-        <Card>
-          <CardContent>
-            <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
-              Loading scan history...
-            </Typography>
-          </CardContent>
-        </Card>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+        <CircularProgress size={32} thickness={3} />
       </Box>
     );
   }
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Box>
-          <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 0.5 }}>
-            Scan History
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            View and manage your previous security scans
-          </Typography>
-        </Box>
-        <Stack direction="row" spacing={1}>
-          <Button
-            variant="outlined"
-            startIcon={<CompareArrowsIcon />}
-            onClick={() => {
-              setCompareOpen(true);
-              if (history.length >= 2) {
-                setBaselineId(history[1].scanId);
-                setCurrentId(history[0].scanId);
-              }
-            }}
-            disabled={history.length < 2}
-          >
-            Compare scans
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<DownloadIcon />}
-            onClick={handleExport}
-            disabled={exporting || history.length === 0}
-          >
-            Export report
-          </Button>
-          <Button variant="outlined" onClick={loadHistory}>
-            Refresh
-          </Button>
-        </Stack>
-      </Box>
+    <Box sx={{ width: '100%' }}>
+      <PageHeader
+        eyebrow="History"
+        title="Scan history"
+        subtitle="Audit trail of previous security scans."
+        actions={
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Button
+              variant="outlined"
+              startIcon={<CompareArrowsIcon />}
+              onClick={() => {
+                setCompareOpen(true);
+                if (history.length >= 2) {
+                  setBaselineId(history[1].scanId);
+                  setCurrentId(history[0].scanId);
+                }
+              }}
+              disabled={history.length < 2}
+              sx={{ borderRadius: 2 }}
+            >
+              Compare
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<DownloadIcon />}
+              onClick={handleExport}
+              disabled={exporting || history.length === 0}
+              sx={{ borderRadius: 2 }}
+            >
+              Export
+            </Button>
+            <IconButton
+              size="small"
+              onClick={loadHistory}
+              sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}
+            >
+              <RefreshIcon fontSize="small" />
+            </IconButton>
+          </Stack>
+        }
+      />
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
           {error}
         </Alert>
       )}
 
       {history.length === 0 ? (
-        <Card>
-          <CardContent>
-            <Box sx={{ textAlign: 'center', py: 8 }}>
-              <Typography variant="h6" gutterBottom>
-                No Scan History
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Start scanning to build your history
-              </Typography>
-              <Button
-                variant="contained"
-                onClick={() => router.push('/scan-local')}
-                sx={{ mr: 2 }}
-              >
-                Scan Local Machine
+        <Panel>
+          <Box sx={{ textAlign: 'center', py: 6 }}>
+            <Typography sx={{ fontWeight: 700, mb: 1 }}>No scan history</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 320, mx: 'auto' }}>
+              Run a scan to start building your audit trail.
+            </Typography>
+            <Stack direction="row" spacing={1} justifyContent="center">
+              <Button variant="contained" onClick={() => router.push('/scan-local')} sx={{ borderRadius: 2 }}>
+                Scan local
               </Button>
-              <Button variant="outlined" onClick={() => router.push('/scan-remote')}>
-                Scan Remote IP
+              <Button variant="outlined" onClick={() => router.push('/scan-remote')} sx={{ borderRadius: 2 }}>
+                Scan remote
               </Button>
-            </Box>
-          </CardContent>
-        </Card>
+            </Stack>
+          </Box>
+        </Panel>
       ) : (
-        <TableContainer component={Paper} variant="outlined">
-          <Table>
+        <TableContainer
+          sx={{
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 2.5,
+            bgcolor: 'background.paper',
+          }}
+        >
+          <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>Target</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell>Vulnerabilities</TableCell>
-                <TableCell>Security Score</TableCell>
-                <TableCell>Actions</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: 'text.secondary' }}>Target</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: 'text.secondary' }}>Date</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: 'text.secondary' }}>Findings</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: 'text.secondary' }}>Score</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: 'text.secondary' }} align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -228,67 +223,67 @@ export default function ScanHistoryPage() {
                 return (
                   <TableRow key={scan.scanId} hover>
                     <TableCell>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {scan.os}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2">
+                      <Typography variant="body2" color="text.secondary">
                         {new Date(scan.timestamp).toLocaleString()}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                        <Chip
-                          label={`${scan.vulnerabilities.length} total`}
-                          color={scan.vulnerabilities.length > 0 ? 'error' : 'success'}
-                          size="small"
-                        />
-                        {fixedCount > 0 && (
-                          <Chip
-                            label={`${fixedCount} fixed`}
-                            color="success"
-                            size="small"
-                            sx={{ fontSize: '0.65rem', height: 20 }}
-                          />
-                        )}
-                        {pendingCount > 0 && (
-                          <Chip
-                            label={`${pendingCount} pending`}
-                            color="warning"
-                            size="small"
-                            sx={{ fontSize: '0.65rem', height: 20 }}
-                          />
-                        )}
-                      </Box>
+                      <Typography variant="body2">
+                        {scan.vulnerabilities.length} total
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {fixedCount > 0 ? `${fixedCount} fixed` : ''}
+                        {fixedCount > 0 && pendingCount > 0 ? ' · ' : ''}
+                        {pendingCount > 0 ? `${pendingCount} pending` : ''}
+                        {fixedCount === 0 && pendingCount === 0 ? '—' : ''}
+                      </Typography>
                     </TableCell>
                     <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: 800,
+                            color:
+                              scan.securityScore >= 70
+                                ? 'success.main'
+                                : scan.securityScore >= 50
+                                  ? 'warning.main'
+                                  : 'error.main',
+                          }}
+                        >
                           {scan.securityScore}
                         </Typography>
-                          <Chip
-                            label={scan.securityGrade || 'Unknown'}
-                            color={getGradeColor(scan.securityGrade) as any}
-                            size="small"
-                          />
-                      </Box>
+                        <Chip
+                          label={scan.securityGrade || 'Unknown'}
+                          color={getGradeColor(scan.securityGrade) as 'success' | 'info' | 'warning' | 'error' | 'default'}
+                          size="small"
+                          variant="outlined"
+                          sx={{ height: 22, fontSize: '0.65rem', fontWeight: 700 }}
+                        />
+                      </Stack>
                     </TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={1}>
+                    <TableCell align="right">
+                      <Stack direction="row" spacing={0.75} justifyContent="flex-end">
                         <Button
                           size="small"
                           variant="outlined"
                           onClick={() => router.push(`/vulnerabilities?scanId=${scan.scanId}`)}
+                          sx={{ borderRadius: 2 }}
                         >
                           View
                         </Button>
                         <IconButton
                           size="small"
                           onClick={() => handleDelete(scan.scanId)}
-                          color="error"
+                          sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}
                         >
-                          <DeleteIcon />
+                          <DeleteIcon fontSize="small" />
                         </IconButton>
                       </Stack>
                     </TableCell>
@@ -300,8 +295,14 @@ export default function ScanHistoryPage() {
         </TableContainer>
       )}
 
-      <Dialog open={compareOpen} onClose={() => setCompareOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Compare scans</DialogTitle>
+      <Dialog
+        open={compareOpen}
+        onClose={() => setCompareOpen(false)}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: 2.5 } }}
+      >
+        <DialogTitle sx={{ fontWeight: 700 }}>Compare scans</DialogTitle>
         <DialogContent>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 1, mb: 2 }}>
             <FormControl fullWidth size="small">
@@ -336,21 +337,18 @@ export default function ScanHistoryPage() {
 
           {comparison && (
             <Box>
-              <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
-                <Chip
-                  label={`Score ${comparison.baselineScore} → ${comparison.currentScore}`}
-                  color={comparison.scoreDelta >= 0 ? 'success' : 'error'}
-                />
-                <Chip
-                  label={`${comparison.scoreDelta >= 0 ? '+' : ''}${comparison.scoreDelta} pts`}
-                  variant="outlined"
-                />
-                <Chip label={`${comparison.unchangedCount} unchanged`} variant="outlined" />
-              </Stack>
+              <Typography variant="body2" sx={{ fontWeight: 700, mb: 0.5 }}>
+                Score {comparison.baselineScore} → {comparison.currentScore}
+                {' '}({comparison.scoreDelta >= 0 ? '+' : ''}{comparison.scoreDelta})
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
+                {comparison.newVulnerabilities.length} new · {comparison.resolvedVulnerabilities.length} resolved ·{' '}
+                {comparison.unchangedCount} unchanged
+              </Typography>
 
               {comparison.newVulnerabilities.length > 0 && (
                 <>
-                  <Typography variant="subtitle2" color="error.main" gutterBottom>
+                  <Typography variant="subtitle2" color="error.main" gutterBottom sx={{ fontWeight: 700 }}>
                     New findings ({comparison.newVulnerabilities.length})
                   </Typography>
                   <List dense>
@@ -369,7 +367,7 @@ export default function ScanHistoryPage() {
 
               {comparison.resolvedVulnerabilities.length > 0 && (
                 <>
-                  <Typography variant="subtitle2" color="success.main" gutterBottom>
+                  <Typography variant="subtitle2" color="success.main" gutterBottom sx={{ fontWeight: 700 }}>
                     Resolved ({comparison.resolvedVulnerabilities.length})
                   </Typography>
                   <List dense>
@@ -384,14 +382,21 @@ export default function ScanHistoryPage() {
 
               {comparison.newVulnerabilities.length === 0 &&
                 comparison.resolvedVulnerabilities.length === 0 && (
-                  <Alert severity="info">No vulnerability changes between these two scans.</Alert>
+                  <Typography variant="body2" color="text.secondary">
+                    No vulnerability changes between these two scans.
+                  </Typography>
                 )}
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setCompareOpen(false)}>Close</Button>
-          <Button variant="contained" onClick={handleCompare} disabled={comparing || !baselineId || !currentId}>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setCompareOpen(false)} sx={{ borderRadius: 2 }}>Close</Button>
+          <Button
+            variant="contained"
+            onClick={handleCompare}
+            disabled={comparing || !baselineId || !currentId}
+            sx={{ borderRadius: 2 }}
+          >
             {comparing ? 'Comparing…' : 'Run comparison'}
           </Button>
         </DialogActions>
@@ -399,4 +404,3 @@ export default function ScanHistoryPage() {
     </Box>
   );
 }
-

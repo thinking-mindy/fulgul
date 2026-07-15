@@ -40,8 +40,7 @@ export const navigationCustomizations: Components<Theme> = {
         border: `1px solid ${theme.palette.divider}`,
         backgroundImage: 'none',
         background: 'hsl(0, 0%, 100%)',
-        boxShadow:
-          'hsla(220, 30%, 5%, 0.07) 0px 4px 16px 0px, hsla(220, 25%, 10%, 0.07) 0px 8px 16px -5px',
+        boxShadow: 'none',
         [`& .${buttonBaseClasses.root}`]: {
           '&.Mui-selected': {
             backgroundColor: alpha(theme.palette.action.selected, 0.3),
@@ -49,8 +48,7 @@ export const navigationCustomizations: Components<Theme> = {
         },
         ...theme.applyStyles('dark', {
           background: gray[900],
-          boxShadow:
-            'hsla(220, 30%, 5%, 0.7) 0px 4px 16px 0px, hsla(220, 25%, 10%, 0.8) 0px 8px 16px -5px',
+          boxShadow: 'none',
         }),
       }),
     },

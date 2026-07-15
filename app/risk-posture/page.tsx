@@ -2,14 +2,26 @@
 
 import { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid2';
-import { Box, Typography, Stack, Chip, Alert, Button, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Stack,
+  Alert,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Divider,
+} from '@mui/material';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import BugReportIcon from '@mui/icons-material/BugReport';
 import { invoke } from '@tauri-apps/api/core';
 import PageHeader from '../../components/ui/PageHeader';
-import GlassCard from '../../components/ui/GlassCard';
 import StatCard from '../../components/ui/StatCard';
+import SectionLabel, { Panel } from '../../components/ui/SectionLabel';
 import DefenseWorkspaceBar from '../../components/defense/DefenseWorkspaceBar';
 import type { ScanComparison, StoredScanResult, DefensePipelineSummary } from '../../types/tauri';
 
@@ -51,29 +63,45 @@ export default function RiskPosturePage() {
   };
 
   const deltaIcon = comparison && comparison.scoreDelta >= 0
-    ? <TrendingUpIcon color="success" />
-    : <TrendingDownIcon color="error" />;
+    ? <TrendingUpIcon color="success" fontSize="small" />
+    : <TrendingDownIcon color="error" fontSize="small" />;
 
   return (
-    <Box>
-      <PageHeader eyebrow="Phase 4 · Risk analysis" title="Measure" titleAccent="your posture." subtitle="Compare scan baselines, track score trends, and prioritize remediation from shared defensive data." chips={['Scan compare', 'Score delta', 'Trend analysis']} />
+    <Box sx={{ width: '100%' }}>
+      <PageHeader
+        eyebrow="Risk analysis"
+        title="Risk posture"
+        subtitle="Compare scan baselines and track score trends."
+      />
       <DefenseWorkspaceBar />
-      {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid size={{ xs: 4 }}><StatCard label="Total scans" value={summary?.scansTotal ?? 0} icon={<AnalyticsIcon />} tone="info" /></Grid>
-        <Grid size={{ xs: 4 }}><StatCard label="Avg score" value={summary?.averageScore ?? '—'} icon={<AnalyticsIcon />} tone="success" /></Grid>
-        <Grid size={{ xs: 4 }}><StatCard label="Open vulns" value={summary?.vulnerabilitiesTotal ?? 0} icon={<AnalyticsIcon />} tone="warning" /></Grid>
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <StatCard label="Total scans" value={summary?.scansTotal ?? 0} icon={<AnalyticsIcon fontSize="small" />} tone="info" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <StatCard label="Avg score" value={summary?.averageScore ?? '—'} icon={<AnalyticsIcon fontSize="small" />} tone="success" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <StatCard label="Open vulns" value={summary?.vulnerabilitiesTotal ?? 0} icon={<BugReportIcon fontSize="small" />} tone="warning" />
+        </Grid>
       </Grid>
 
-      <GlassCard>
-        <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2 }}>Scan comparison</Typography>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }}>
+      <Panel>
+        <SectionLabel>Scan comparison</SectionLabel>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2.5 }}>
           <FormControl fullWidth size="small">
             <InputLabel>Baseline scan</InputLabel>
             <Select label="Baseline scan" value={baseline} onChange={(e) => setBaseline(e.target.value)}>
               {history.map((s) => (
-                <MenuItem key={s.scanId} value={s.scanId}>{s.timestamp.slice(0, 10)} — {s.securityScore}/100</MenuItem>
+                <MenuItem key={s.scanId} value={s.scanId}>
+                  {s.timestamp.slice(0, 10)} — {s.securityScore}/100
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -81,46 +109,69 @@ export default function RiskPosturePage() {
             <InputLabel>Current scan</InputLabel>
             <Select label="Current scan" value={current} onChange={(e) => setCurrent(e.target.value)}>
               {history.map((s) => (
-                <MenuItem key={s.scanId} value={s.scanId}>{s.timestamp.slice(0, 10)} — {s.securityScore}/100</MenuItem>
+                <MenuItem key={s.scanId} value={s.scanId}>
+                  {s.timestamp.slice(0, 10)} — {s.securityScore}/100
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
-          <Button variant="contained" color="success" onClick={compare} sx={{ minWidth: 120 }}>Compare</Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={compare}
+            sx={{ minWidth: 120, borderRadius: 2 }}
+          >
+            Compare
+          </Button>
         </Stack>
 
         {comparison && (
           <Box>
-            <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1.5 }}>
               {deltaIcon}
-              <Typography fontWeight={700}>
+              <Typography sx={{ fontWeight: 700 }}>
                 Score {comparison.baselineScore} → {comparison.currentScore}
                 {' '}({comparison.scoreDelta >= 0 ? '+' : ''}{comparison.scoreDelta})
               </Typography>
             </Stack>
-            <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 2 }}>
-              <Chip label={`${comparison.newVulnerabilities.length} new`} color="error" size="small" />
-              <Chip label={`${comparison.resolvedVulnerabilities.length} resolved`} color="success" size="small" />
-              <Chip label={`${comparison.unchangedCount} unchanged`} size="small" variant="outlined" />
-            </Stack>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2.5 }}>
+              {comparison.newVulnerabilities.length} new · {comparison.resolvedVulnerabilities.length} resolved ·{' '}
+              {comparison.unchangedCount} unchanged
+            </Typography>
             {comparison.newVulnerabilities.length > 0 && (
               <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" color="error.main" sx={{ mb: 1 }}>New findings</Typography>
-                {comparison.newVulnerabilities.slice(0, 8).map((v) => (
-                  <Typography key={v.id} variant="body2">• {v.title} ({v.severity})</Typography>
-                ))}
+                <Typography variant="subtitle2" color="error.main" sx={{ mb: 1, fontWeight: 700 }}>
+                  New findings
+                </Typography>
+                <Stack divider={<Divider />} spacing={0}>
+                  {comparison.newVulnerabilities.slice(0, 8).map((v) => (
+                    <Typography key={v.id} variant="body2" sx={{ py: 0.75 }}>
+                      {v.title}{' '}
+                      <Typography component="span" variant="caption" color="text.secondary">
+                        ({v.severity})
+                      </Typography>
+                    </Typography>
+                  ))}
+                </Stack>
               </Box>
             )}
             {comparison.resolvedVulnerabilities.length > 0 && (
               <Box>
-                <Typography variant="subtitle2" color="success.main" sx={{ mb: 1 }}>Resolved</Typography>
-                {comparison.resolvedVulnerabilities.slice(0, 8).map((v) => (
-                  <Typography key={v.id} variant="body2">• {v.title}</Typography>
-                ))}
+                <Typography variant="subtitle2" color="success.main" sx={{ mb: 1, fontWeight: 700 }}>
+                  Resolved
+                </Typography>
+                <Stack divider={<Divider />} spacing={0}>
+                  {comparison.resolvedVulnerabilities.slice(0, 8).map((v) => (
+                    <Typography key={v.id} variant="body2" sx={{ py: 0.75 }}>
+                      {v.title}
+                    </Typography>
+                  ))}
+                </Stack>
               </Box>
             )}
           </Box>
         )}
-      </GlassCard>
+      </Panel>
     </Box>
   );
 }

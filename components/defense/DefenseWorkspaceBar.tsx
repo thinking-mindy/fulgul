@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, TextField, Button, Stack, Chip, Typography, alpha } from '@mui/material';
+import { Box, TextField, Button, Stack, Typography } from '@mui/material';
 import ShieldIcon from '@mui/icons-material/Shield';
 import SaveIcon from '@mui/icons-material/Save';
 import { invoke } from '@tauri-apps/api/core';
@@ -13,15 +13,15 @@ interface DefenseWorkspaceBarProps {
 
 export default function DefenseWorkspaceBar({ onUpdate }: DefenseWorkspaceBarProps) {
   const [asset, setAsset] = useState('');
-  const [engagement, setEngagement] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    invoke<DefenseWorkspace>('get_defense_workspace').then((ws) => {
-      setAsset(ws.primaryAsset);
-      setEngagement(ws.engagementId ?? null);
-      onUpdate?.(ws);
-    }).catch(() => {});
+    invoke<DefenseWorkspace>('get_defense_workspace')
+      .then((ws) => {
+        setAsset(ws.primaryAsset);
+        onUpdate?.(ws);
+      })
+      .catch(() => {});
   }, [onUpdate]);
 
   const save = async () => {
@@ -42,13 +42,15 @@ export default function DefenseWorkspaceBar({ onUpdate }: DefenseWorkspaceBarPro
         borderRadius: 2.5,
         border: '1px solid',
         borderColor: 'divider',
-        background: (t) => `linear-gradient(90deg, ${alpha(t.palette.success.main, 0.08)} 0%, transparent 100%)`,
+        bgcolor: 'background.paper',
       }}
     >
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems={{ sm: 'center' }}>
-        <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 150 }}>
-          <ShieldIcon color="success" fontSize="small" />
-          <Typography variant="subtitle2" fontWeight={700}>Protected asset</Typography>
+        <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 130 }}>
+          <ShieldIcon color="primary" fontSize="small" />
+          <Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+            Asset
+          </Typography>
         </Stack>
         <TextField
           size="small"
@@ -58,14 +60,10 @@ export default function DefenseWorkspaceBar({ onUpdate }: DefenseWorkspaceBarPro
           onChange={(e) => setAsset(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && save()}
         />
-        <Button variant="contained" color="success" size="small" startIcon={<SaveIcon />} onClick={save} disabled={saving}>
+        <Button variant="contained" size="small" startIcon={<SaveIcon />} onClick={save} disabled={saving} sx={{ borderRadius: 2 }}>
           Sync
         </Button>
-        {engagement && <Chip label="Engagement linked" size="small" color="success" variant="outlined" />}
       </Stack>
-      <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-        Shared across scans, vulnerability tracking, hardening, and response workflows.
-      </Typography>
     </Box>
   );
 }

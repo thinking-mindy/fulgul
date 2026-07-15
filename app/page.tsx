@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import Grid from '@mui/material/Grid2';
 import {
@@ -6,22 +6,17 @@ import {
   Box,
   Button,
   Chip,
-  Avatar,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
   Stack,
   Divider,
   CircularProgress,
   Alert,
   IconButton,
   Tooltip,
+  alpha,
 } from '@mui/material';
 import BugReportIcon from '@mui/icons-material/BugReport';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningIcon from '@mui/icons-material/Warning';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ScanIcon from '@mui/icons-material/Scanner';
 import BuildIcon from '@mui/icons-material/Build';
 import GavelIcon from '@mui/icons-material/Gavel';
@@ -29,14 +24,24 @@ import ShieldIcon from '@mui/icons-material/Shield';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import BoltIcon from '@mui/icons-material/Bolt';
+import NorthEastIcon from '@mui/icons-material/NorthEast';
 import { useRouter } from 'next/navigation';
-import PageHeader from '../components/ui/PageHeader';
-import StatCard from '../components/ui/StatCard';
-import WorkflowStrip from '../components/ui/WorkflowStrip';
-import FeatureTile from '../components/ui/FeatureTile';
-import GlassCard from '../components/ui/GlassCard';
+import SecurityScoreGauge from '../components/SecurityScoreGauge';
 import { useSecurityOverview, formatTimeAgo } from '../hooks/useSecurityOverview';
+
+const fadeUp = {
+  '@keyframes fadeUp': {
+    from: { opacity: 0, transform: 'translateY(10px)' },
+    to: { opacity: 1, transform: 'translateY(0)' },
+  },
+};
+
+function sectionAnim(delay: number) {
+  return {
+    ...fadeUp,
+    animation: `fadeUp 0.55s ease ${delay}s both`,
+  };
+}
 
 export default function Dashboard() {
   const router = useRouter();
@@ -54,19 +59,6 @@ export default function Dashboard() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'fixed':
-        return 'success';
-      case 'failed':
-        return 'error';
-      case 'in-progress':
-        return 'warning';
-      default:
-        return 'default';
-    }
-  };
-
   const fixRate =
     overview.totalVulnerabilities > 0
       ? Math.round((overview.fixedVulnerabilities / overview.totalVulnerabilities) * 100)
@@ -75,320 +67,450 @@ export default function Dashboard() {
   const modules = [
     {
       title: 'Offensive Hub',
-      description: 'Run live attack labs and capture flags against targets you control.',
-      icon: <GavelIcon />,
+      description: 'Attack labs and flag capture on authorized targets.',
+      icon: <GavelIcon fontSize="small" />,
       path: '/offensive',
-      tag: 'Simulate',
     },
     {
       title: 'Defensive Hub',
-      description: 'Scan, triage, and track posture across your environment.',
-      icon: <ShieldIcon />,
+      description: 'Scan, triage, and track security posture.',
+      icon: <ShieldIcon fontSize="small" />,
       path: '/defensive',
-      tag: 'Detect',
     },
     {
       title: 'Harden Systems',
-      description: 'Apply guided hardening tasks with clear impact and rollback notes.',
-      icon: <BuildIcon />,
+      description: 'Guided hardening with clear impact notes.',
+      icon: <BuildIcon fontSize="small" />,
       path: '/hardening',
-      tag: 'Harden',
     },
     {
       title: 'Auto Response',
-      description: 'Configure automated patch, quarantine, and notification workflows.',
-      icon: <AutoFixHighIcon />,
+      description: 'Patch, quarantine, and notification rules.',
+      icon: <AutoFixHighIcon fontSize="small" />,
       path: '/response',
-      tag: 'Respond',
+    },
+  ];
+
+  const vitals = [
+    {
+      label: 'Open findings',
+      value: overview.totalVulnerabilities,
+      detail:
+        overview.criticalVulnerabilities > 0
+          ? `${overview.criticalVulnerabilities} critical / high`
+          : 'No critical issues',
+      icon: <BugReportIcon fontSize="small" />,
+      tone: overview.criticalVulnerabilities > 0 ? 'error.main' : 'text.primary',
+    },
+    {
+      label: 'Remediation',
+      value: `${fixRate}%`,
+      detail: `${overview.fixedVulnerabilities} fixed · ${overview.pendingVulnerabilities} pending`,
+      icon: <CheckCircleIcon fontSize="small" />,
+      tone: 'success.main',
+    },
+    {
+      label: 'Needs attention',
+      value: overview.pendingVulnerabilities,
+      detail: 'Pending fixes across scans',
+      icon: <WarningIcon fontSize="small" />,
+      tone: overview.pendingVulnerabilities > 0 ? 'warning.main' : 'success.main',
     },
   ];
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
-        <CircularProgress />
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 420 }}>
+        <CircularProgress size={32} thickness={3} />
       </Box>
     );
   }
 
   return (
-    <Box>
+    <Box sx={{ width: '100%' }}>
       {error && (
-        <Alert severity="warning" sx={{ mb: 3 }} onClose={() => refresh()}>
+        <Alert severity="warning" sx={{ mb: 3, borderRadius: 2 }} onClose={() => refresh()}>
           {error}
         </Alert>
       )}
 
-      <PageHeader
-        eyebrow="Thinking Minds · Security ops"
-        title="Simulate sharp."
-        titleAccent="Respond secure."
-        subtitle="Fulgul unifies offensive labs, vulnerability discovery, and automated response — built for teams who want velocity without trading away security."
-        chips={['Simulate', 'Detect', 'Respond', 'Security-first']}
-        actions={
-          <Stack direction="row" spacing={1}>
-            <Tooltip title="Refresh dashboard">
-              <IconButton onClick={refresh} color="primary">
-                <RefreshIcon />
-              </IconButton>
-            </Tooltip>
-            <Button
-              variant="contained"
-              size="large"
-              startIcon={<ScanIcon />}
-              onClick={() => router.push('/scan-local')}
+      {/* Header */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: { xs: 'stretch', sm: 'flex-end' },
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+          mb: 4,
+          ...sectionAnim(0),
+        }}
+      >
+        <Box>
+          <Typography
+            variant="overline"
+            sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: '0.14em', display: 'block', mb: 1 }}
+          >
+            Mission control
+          </Typography>
+          <Typography
+            component="h1"
+            sx={{
+              fontWeight: 800,
+              fontSize: { xs: '1.85rem', md: '2.35rem' },
+              letterSpacing: '-0.04em',
+              lineHeight: 1.1,
+              mb: 1,
+            }}
+          >
+            Security posture
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 440, lineHeight: 1.65 }}>
+            Scan, harden, and respond from one calm workspace.
+          </Typography>
+        </Box>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Tooltip title="Refresh">
+            <IconButton
+              onClick={refresh}
+              size="small"
+              sx={{
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+              }}
             >
-              Run scan
-            </Button>
-          </Stack>
-        }
-      />
-
-      <Box sx={{ mb: 4 }}>
-        <WorkflowStrip />
+              <RefreshIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Button
+            variant="contained"
+            startIcon={<ScanIcon />}
+            onClick={() => router.push('/scan-local')}
+            sx={{ px: 2.5, py: 1, borderRadius: 2, fontWeight: 700 }}
+          >
+            Run scan
+          </Button>
+        </Stack>
       </Box>
 
-      <Grid container spacing={2.5} sx={{ mb: 4 }}>
-        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-          <StatCard
-            label="Security score"
-            value={overview.averageScore || '—'}
-            hint={
-              overview.totalScans > 0
-                ? `${overview.securityGrade} · ${overview.totalScans} scan${overview.totalScans !== 1 ? 's' : ''}`
-                : 'Run your first scan to establish a baseline'
-            }
-            icon={<BoltIcon />}
-            progress={overview.averageScore}
-            tone={
-              overview.averageScore >= 70
-                ? 'success'
-                : overview.averageScore >= 50
-                  ? 'warning'
-                  : overview.averageScore > 0
-                    ? 'error'
-                    : 'primary'
-            }
-          />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-          <StatCard
-            label="Open findings"
-            value={overview.totalVulnerabilities}
-            hint={
-              overview.criticalVulnerabilities > 0
-                ? `${overview.criticalVulnerabilities} critical / high`
-                : 'No critical issues on record'
-            }
-            icon={<BugReportIcon />}
-            tone={overview.criticalVulnerabilities > 0 ? 'error' : 'primary'}
-          />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-          <StatCard
-            label="Remediation"
-            value={`${fixRate}%`}
-            hint={`${overview.fixedVulnerabilities} fixed · ${overview.pendingVulnerabilities} pending`}
-            icon={<CheckCircleIcon />}
-            progress={fixRate}
-            tone="success"
-          />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-          <StatCard
-            label="Needs attention"
-            value={overview.pendingVulnerabilities}
-            hint="Pending fixes across all scans"
-            icon={<WarningIcon />}
-            tone={overview.pendingVulnerabilities > 0 ? 'warning' : 'success'}
-          />
-        </Grid>
-      </Grid>
-
-      <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: '0.1em', color: 'text.secondary', mb: 2, display: 'block' }}>
-        Security modules
-      </Typography>
-      <Grid container spacing={2.5} sx={{ mb: 4 }}>
-        {modules.map((mod) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={mod.path}>
-            <FeatureTile
-              title={mod.title}
-              description={mod.description}
-              icon={mod.icon}
-              tag={mod.tag}
-              onClick={() => router.push(mod.path)}
-            />
-          </Grid>
-        ))}
-      </Grid>
-
-      <Grid container spacing={2.5}>
-        <Grid size={{ xs: 12, lg: 7 }}>
-          <GlassCard>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: '-0.02em' }}>
-                Recent findings
-              </Typography>
-              <Button size="small" endIcon={<ArrowForwardIcon />} onClick={() => router.push('/vulnerabilities')}>
-                View all
-              </Button>
+      {/* Posture hero */}
+      <Box
+        sx={{
+          mb: 4,
+          p: { xs: 2.5, md: 3.5 },
+          borderRadius: 3,
+          border: '1px solid',
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
+          ...sectionAnim(0.06),
+        }}
+      >
+        <Grid container spacing={{ xs: 3, md: 4 }} alignItems="center">
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <SecurityScoreGauge
+                score={overview.averageScore || 0}
+                grade={overview.totalScans > 0 ? overview.securityGrade : undefined}
+                compact
+              />
             </Box>
-            {overview.recentVulnerabilities.length === 0 ? (
-              <Box sx={{ textAlign: 'center', py: 5 }}>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  No vulnerabilities recorded yet. Start with a local or remote scan.
-                </Typography>
-                <Stack direction="row" spacing={1} justifyContent="center" flexWrap="wrap" useFlexGap>
-                  <Button variant="contained" startIcon={<ScanIcon />} onClick={() => router.push('/scan-local')}>
-                    Scan local
-                  </Button>
-                  <Button variant="outlined" startIcon={<PlayArrowIcon />} onClick={() => router.push('/offensive')}>
-                    Attack lab
-                  </Button>
-                </Stack>
-              </Box>
-            ) : (
-              <List disablePadding>
-                {overview.recentVulnerabilities.slice(0, 5).map((vuln, index) => (
-                  <Box key={vuln.id}>
-                    <ListItem
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 1.5 }}>
+              {overview.totalScans > 0
+                ? `${overview.totalScans} scan${overview.totalScans !== 1 ? 's' : ''} on record`
+                : 'Run a scan to establish your baseline'}
+            </Typography>
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 8 }}>
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              divider={<Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', sm: 'block' } }} />}
+              spacing={0}
+              sx={{
+                border: '1px solid',
+                borderColor: (t) => alpha(t.palette.divider, 0.8),
+                borderRadius: 2.5,
+                overflow: 'hidden',
+              }}
+            >
+              {vitals.map((item, i) => (
+                <Box
+                  key={item.label}
+                  sx={{
+                    flex: 1,
+                    p: 2.5,
+                    borderBottom: {
+                      xs: i < vitals.length - 1 ? '1px solid' : 'none',
+                      sm: 'none',
+                    },
+                    borderColor: 'divider',
+                  }}
+                >
+                  <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1.25 }}>
+                    <Box
                       sx={{
-                        px: 0,
-                        py: 1.5,
-                        borderRadius: 2,
-                        '&:hover': { bgcolor: 'action.hover' },
+                        width: 28,
+                        height: 28,
+                        borderRadius: 1.5,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        bgcolor: (t) => alpha(t.palette.primary.main, 0.12),
+                        color: 'primary.main',
                       }}
                     >
-                      <ListItemAvatar>
-                        <Avatar
-                          sx={{
-                            bgcolor: `${getSeverityColor(vuln.severity)}.main`,
-                            width: 40,
-                            height: 40,
-                          }}
-                        >
-                          <BugReportIcon fontSize="small" />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                              {vuln.title}
-                            </Typography>
-                            <Chip label={vuln.severity} size="small" color={getSeverityColor(vuln.severity) as 'error' | 'warning' | 'info'} sx={{ height: 20, fontSize: '0.65rem' }} />
-                            <Chip label={vuln.status} size="small" color={getStatusColor(vuln.status) as 'success' | 'error' | 'warning' | 'default'} sx={{ height: 20, fontSize: '0.65rem' }} />
-                          </Box>
-                        }
-                        secondary={formatTimeAgo(vuln.detectedAt)}
-                      />
-                    </ListItem>
-                    {index < Math.min(overview.recentVulnerabilities.length, 5) - 1 && <Divider />}
+                      {item.icon}
+                    </Box>
+                    <Typography
+                      variant="caption"
+                      sx={{ fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'text.secondary' }}
+                    >
+                      {item.label}
+                    </Typography>
+                  </Stack>
+                  <Typography sx={{ fontWeight: 800, fontSize: '1.75rem', letterSpacing: '-0.04em', color: item.tone, lineHeight: 1 }}>
+                    {item.value}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.75, display: 'block' }}>
+                    {item.detail}
+                  </Typography>
+                </Box>
+              ))}
+            </Stack>
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* Launch */}
+      <Box sx={{ mb: 4, ...sectionAnim(0.12) }}>
+        <Typography
+          variant="overline"
+          sx={{ fontWeight: 700, letterSpacing: '0.12em', color: 'text.secondary', mb: 1.5, display: 'block' }}
+        >
+          Launch
+        </Typography>
+        <Grid container spacing={1.5}>
+          {modules.map((mod) => (
+            <Grid size={{ xs: 12, sm: 6, md: 3 }} key={mod.path}>
+              <Box
+                onClick={() => router.push(mod.path)}
+                sx={{
+                  p: 2.25,
+                  height: '100%',
+                  borderRadius: 2.5,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  bgcolor: 'background.paper',
+                  cursor: 'pointer',
+                  transition: 'border-color 0.2s ease, transform 0.2s ease, background-color 0.2s ease',
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    transform: 'translateY(-2px)',
+                    bgcolor: (t) => alpha(t.palette.primary.main, 0.04),
+                    '& .launch-arrow': { opacity: 1, transform: 'translate(2px, -2px)' },
+                  },
+                }}
+              >
+                <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 1.5 }}>
+                  <Box
+                    sx={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      bgcolor: 'primary.main',
+                      color: 'primary.contrastText',
+                    }}
+                  >
+                    {mod.icon}
+                  </Box>
+                  <NorthEastIcon
+                    className="launch-arrow"
+                    sx={{
+                      fontSize: 16,
+                      color: 'text.secondary',
+                      opacity: 0.35,
+                      transition: 'opacity 0.2s ease, transform 0.2s ease',
+                    }}
+                  />
+                </Stack>
+                <Typography sx={{ fontWeight: 700, fontSize: '0.95rem', letterSpacing: '-0.02em', mb: 0.5 }}>
+                  {mod.title}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.55, display: 'block' }}>
+                  {mod.description}
+                </Typography>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
+      {/* Activity */}
+      <Grid container spacing={2.5} sx={sectionAnim(0.18)}>
+        <Grid size={{ xs: 12, lg: 7 }}>
+          <Box
+            sx={{
+              height: '100%',
+              p: 2.75,
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
+              bgcolor: 'background.paper',
+            }}
+          >
+            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+              <Typography sx={{ fontWeight: 700, letterSpacing: '-0.02em' }}>Recent findings</Typography>
+              <Button
+                size="small"
+                endIcon={<ArrowForwardIcon sx={{ fontSize: 14 }} />}
+                onClick={() => router.push('/vulnerabilities')}
+                sx={{ color: 'text.secondary', fontWeight: 600 }}
+              >
+                View all
+              </Button>
+            </Stack>
+
+            {overview.recentVulnerabilities.length === 0 ? (
+              <Box sx={{ py: 5, textAlign: 'center' }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, maxWidth: 280, mx: 'auto' }}>
+                  No findings yet. Start with a local scan to populate this feed.
+                </Typography>
+                <Button variant="outlined" startIcon={<ScanIcon />} onClick={() => router.push('/scan-local')} sx={{ borderRadius: 2 }}>
+                  Scan local machine
+                </Button>
+              </Box>
+            ) : (
+              <Stack divider={<Divider sx={{ borderColor: (t) => alpha(t.palette.divider, 0.6) }} />}>
+                {overview.recentVulnerabilities.slice(0, 5).map((vuln) => (
+                  <Box
+                    key={vuln.id}
+                    sx={{
+                      py: 1.75,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1.5,
+                      cursor: 'pointer',
+                      borderRadius: 1,
+                      '&:hover': { bgcolor: 'action.hover' },
+                    }}
+                    onClick={() => router.push('/vulnerabilities')}
+                  >
+                    <Box
+                      sx={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        flexShrink: 0,
+                        bgcolor: `${getSeverityColor(vuln.severity)}.main`,
+                      }}
+                    />
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+                        {vuln.title}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {formatTimeAgo(vuln.detectedAt)}
+                      </Typography>
+                    </Box>
+                    <Chip
+                      label={vuln.severity}
+                      size="small"
+                      color={getSeverityColor(vuln.severity) as 'error' | 'warning' | 'info'}
+                      variant="outlined"
+                      sx={{ height: 22, fontSize: '0.65rem', fontWeight: 700, textTransform: 'capitalize' }}
+                    />
                   </Box>
                 ))}
-              </List>
+              </Stack>
             )}
-          </GlassCard>
+          </Box>
         </Grid>
 
         <Grid size={{ xs: 12, lg: 5 }}>
-          <Stack spacing={2.5}>
-            <GlassCard>
-              <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: '-0.02em', mb: 2 }}>
-                Studio signal
-              </Typography>
-              <Stack spacing={2}>
-                <Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.75 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Scan coverage
-                    </Typography>
-                    <Chip
-                      label={overview.totalScans > 0 ? 'Active' : 'Idle'}
-                      size="small"
-                      color={overview.totalScans > 0 ? 'success' : 'default'}
-                    />
-                  </Box>
-                  <Typography variant="caption" color="text.secondary">
-                    {overview.totalScans} completed scan{overview.totalScans !== 1 ? 's' : ''}
-                  </Typography>
-                </Box>
-                <Divider />
-                <Box>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Posture grade
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 800, textTransform: 'capitalize', color: 'primary.main' }}>
-                    {overview.securityGrade}
-                  </Typography>
-                </Box>
-                <Divider />
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  startIcon={<GavelIcon />}
-                  onClick={() => router.push('/attacks')}
-                >
-                  Open attack lab
-                </Button>
-              </Stack>
-            </GlassCard>
+          <Box
+            sx={{
+              height: '100%',
+              p: 2.75,
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
+              bgcolor: 'background.paper',
+            }}
+          >
+            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+              <Typography sx={{ fontWeight: 700, letterSpacing: '-0.02em' }}>Recent scans</Typography>
+              <Button
+                size="small"
+                endIcon={<ArrowForwardIcon sx={{ fontSize: 14 }} />}
+                onClick={() => router.push('/scan-history')}
+                sx={{ color: 'text.secondary', fontWeight: 600 }}
+              >
+                History
+              </Button>
+            </Stack>
 
-            <GlassCard>
-              <Typography variant="h6" sx={{ fontWeight: 700, letterSpacing: '-0.02em', mb: 2 }}>
-                Recent scans
+            {overview.recentScans.length === 0 ? (
+              <Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>
+                Scan history appears here after your first run.
               </Typography>
-              {overview.recentScans.length === 0 ? (
-                <Typography variant="body2" color="text.secondary">
-                  Scan history will appear here after your first run.
-                </Typography>
-              ) : (
-                <Stack spacing={1.5}>
-                  {overview.recentScans.slice(0, 4).map((scan) => (
-                    <Box
-                      key={scan.scanId}
-                      onClick={() => router.push('/scan-history')}
+            ) : (
+              <Stack spacing={1.25}>
+                {overview.recentScans.slice(0, 5).map((scan) => (
+                  <Box
+                    key={scan.scanId}
+                    onClick={() => router.push('/scan-history')}
+                    sx={{
+                      px: 1.75,
+                      py: 1.5,
+                      borderRadius: 2,
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      transition: 'border-color 0.2s ease',
+                      '&:hover': { borderColor: 'primary.main' },
+                    }}
+                  >
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+                        {scan.os}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {formatTimeAgo(scan.timestamp)}
+                      </Typography>
+                    </Box>
+                    <Typography
                       sx={{
-                        p: 1.5,
-                        borderRadius: 2,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        cursor: 'pointer',
-                        transition: 'border-color 0.2s ease',
-                        '&:hover': { borderColor: 'primary.main' },
+                        fontWeight: 800,
+                        fontSize: '0.95rem',
+                        letterSpacing: '-0.03em',
+                        color:
+                          scan.securityScore >= 70
+                            ? 'success.main'
+                            : scan.securityScore >= 50
+                              ? 'warning.main'
+                              : 'error.main',
                       }}
                     >
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Box>
-                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            {scan.os}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {formatTimeAgo(scan.timestamp)}
-                          </Typography>
-                        </Box>
-                        <Chip
-                          label={`${scan.securityScore}`}
-                          size="small"
-                          color={scan.securityScore >= 70 ? 'success' : scan.securityScore >= 50 ? 'warning' : 'error'}
-                          sx={{ fontWeight: 700 }}
-                        />
-                      </Box>
-                    </Box>
-                  ))}
-                </Stack>
-              )}
-            </GlassCard>
-          </Stack>
+                      {scan.securityScore}
+                    </Typography>
+                  </Box>
+                ))}
+              </Stack>
+            )}
+          </Box>
         </Grid>
       </Grid>
 
-      <Box sx={{ mt: 5, pt: 3, borderTop: '1px solid', borderColor: 'divider', textAlign: 'center' }}>
-        <Typography variant="caption" color="text.secondary">
-          Fulgul: The Spark — made with care by{' '}
-          <Typography component="span" variant="caption" sx={{ fontWeight: 700, color: 'primary.main' }}>
-            Thinking Minds
-          </Typography>
+      <Box sx={{ mt: 5, pt: 2.5, borderTop: '1px solid', borderColor: 'divider', textAlign: 'center' }}>
+        <Typography variant="caption" color="text.secondary" sx={{ letterSpacing: '0.04em' }}>
+          Fulgul · Thinking Minds
         </Typography>
       </Box>
     </Box>
