@@ -29,7 +29,7 @@ const LINKS = {
   github: 'https://github.com/thinking-mindy/fulgul',
   issues: 'https://github.com/thinking-mindy/fulgul/issues',
   discussions: 'https://github.com/thinking-mindy/fulgul/discussions',
-  coffee: 'https://buymeacoffee.com/thinkingminds',
+  coffee: 'https://www.thinkingminds.co.zw/buy-coffee',
 };
 
 const FREE_FEATURES = [
