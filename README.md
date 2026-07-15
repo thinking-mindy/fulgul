@@ -110,7 +110,7 @@ Fulgul is free. If it helps you:
 - ☕ [Buy Me a Coffee](https://www.thinkingminds.co.zw/buy-coffee)
 - 🐛 [Report an issue](https://github.com/thinking-mindy/fulgul/issues)
 
-**Email:** [yhinkingmindszw@gmail.com](mailto:yhinkingmindszw@gmail.com)  
+**Email:** [thinkingmindszw@gmail.com](mailto:thinkingmindszw@gmail.com)  
 **Site:** [thinkingminds.co.zw](https://thinkingminds.co.zw)
 
 ---
