@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use tokio::fs;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -23,7 +23,70 @@ pub async fn wordlists_dir() -> Result<PathBuf, String> {
     Ok(dir)
 }
 
+fn bundled_wordlists_dir() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("wordlists")
+}
+
+fn is_builtin_name(name: &str) -> bool {
+    name.starts_with("common-")
+        || name.starts_with("top-")
+        || name.starts_with("wifi-")
+        || name.starts_with("twd-part-")
+}
+
+async fn copy_bundled_wordlist(source: &Path, dest: &Path) -> Result<(), String> {
+    if dest.exists() {
+        let src_meta = fs::metadata(source)
+            .await
+            .map_err(|e| format!("Failed to stat bundled wordlist: {e}"))?;
+        let dest_meta = fs::metadata(dest)
+            .await
+            .map_err(|e| format!("Failed to stat installed wordlist: {e}"))?;
+        if dest_meta.len() >= src_meta.len() {
+            return Ok(());
+        }
+    }
+    fs::copy(source, dest)
+        .await
+        .map_err(|e| format!("Failed to install bundled wordlist: {e}"))?;
+    Ok(())
+}
+
+async fn install_bundled_wordlists_from(source_dir: &Path) -> Result<(), String> {
+    if !source_dir.is_dir() {
+        return Ok(());
+    }
+    let dest_dir = wordlists_dir().await?;
+    let mut entries = fs::read_dir(source_dir)
+        .await
+        .map_err(|e| format!("Failed to read bundled wordlists: {e}"))?;
+    while let Some(entry) = entries
+        .next_entry()
+        .await
+        .map_err(|e| format!("Failed to read bundled wordlist entry: {e}"))?
+    {
+        let path = entry.path();
+        if path.extension().and_then(|e| e.to_str()) != Some("txt") {
+            continue;
+        }
+        let name = path
+            .file_name()
+            .and_then(|n| n.to_str())
+            .unwrap_or("unknown.txt");
+        copy_bundled_wordlist(&path, &dest_dir.join(name)).await?;
+    }
+    Ok(())
+}
+
+pub async fn install_bundled_wordlists(extra_dirs: &[PathBuf]) -> Result<(), String> {
+    for dir in extra_dirs {
+        install_bundled_wordlists_from(dir).await?;
+    }
+    install_bundled_wordlists_from(&bundled_wordlists_dir()).await
+}
+
 pub async fn ensure_builtin_wordlists() -> Result<(), String> {
+    install_bundled_wordlists(&[]).await?;
     let dir = wordlists_dir().await?;
     let builtins: &[(&str, &str)] = &[
         (
@@ -118,9 +181,7 @@ pub async fn list_wordlists() -> Result<Vec<WordlistInfo>, String> {
             .and_then(|n| n.to_str())
             .unwrap_or("unknown.txt")
             .to_string();
-        let builtin = name.starts_with("common-")
-            || name.starts_with("top-")
-            || name.starts_with("wifi-");
+        let builtin = is_builtin_name(&name);
         if let Ok(info) = stat_wordlist(&path, &name, builtin).await {
             lists.push(info);
         }
@@ -166,7 +227,7 @@ pub async fn load_wordlist_lines(id: &str) -> Result<Vec<String>, String> {
 
 pub async fn delete_wordlist(id: &str) -> Result<(), String> {
     let safe = sanitize_name(id);
-    if safe.starts_with("common-") || safe.starts_with("top-") || safe.starts_with("wifi-") {
+    if is_builtin_name(&safe) {
         return Err("Cannot delete built-in wordlists".to_string());
     }
     let path = wordlists_dir().await?.join(&safe);

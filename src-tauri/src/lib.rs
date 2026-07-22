@@ -7,11 +7,23 @@ mod terminal;
 mod hardening;
 
 use commands::*;
+use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .setup(|app| {
+            let mut sources = Vec::new();
+            if let Ok(resource_dir) = app.path().resource_dir() {
+                sources.push(resource_dir.join("wordlists"));
+            }
+            tauri::async_runtime::block_on(
+                attacks::bruteforce::wordlists::install_bundled_wordlists(&sources),
+            )
+            .map_err(|e| -> Box<dyn std::error::Error> { e.into() })?;
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             simulate_attack,
             get_hardening_tasks,

@@ -49,7 +49,9 @@
       "digestAlgorithm": "sha256",
       "timestampUrl": ""
     },
-    "resources": [],
+    "resources": {
+      "wordlists/*": "wordlists/"
+    },
     "copyright": "",
     "category": "DeveloperTool",
     "shortDescription": "Vulnerability scanning and system hardening desktop application",
