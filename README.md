@@ -5,7 +5,7 @@
 **Free desktop security platform** — Blue Team defense, Red Team labs, and a real shell in one app.
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)](https://github.com/thinking-mindy/fulgul)
-[![Version](https://img.shields.io/badge/Version-1.0.3-blue)](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.3)
+[![Version](https://img.shields.io/badge/Version-1.0.4-blue)](https://github.com/thinking-mindy/fulgul/releases/tag/v1.0.4)
 [![Price](https://img.shields.io/badge/Price-100%25%20Free-brightgreen)](https://github.com/thinking-mindy/fulgul)
 
 [Download](https://github.com/thinking-mindy/fulgul/releases) · [Issues](https://github.com/thinking-mindy/fulgul/issues) · [Discussions](https://github.com/thinking-mindy/fulgul/discussions) · [Buy Me a Coffee](https://www.thinkingminds.co.zw/buy-coffee)
@@ -62,7 +62,7 @@ Grab installers from **[Releases](https://github.com/thinking-mindy/fulgul/relea
 
 | Release | When |
 |---------|------|
-| Version tags (`v1.0.3`, …) | Stable downloads |
+| Version tags (`v1.0.4`, …) | Stable downloads |
 | **Continuous** | Latest successful build from `main` |
 
 | Platform | Package |

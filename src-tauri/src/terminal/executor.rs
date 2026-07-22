@@ -1,3 +1,4 @@
+use super::runner::shell_command;
 use serde::{Deserialize, Serialize};
 use std::process::Stdio;
 use tokio::io::{AsyncWriteExt, BufReader};
@@ -33,237 +34,77 @@ impl TerminalExecutor {
         command: String,
         output_tx: mpsc::UnboundedSender<TerminalOutput>,
     ) -> Result<(), String> {
-        #[cfg(target_os = "linux")]
-        {
-            use tokio::io::AsyncBufReadExt;
-            use tokio::process::Command;
-            let mut cmd = Command::new("sh");
-            cmd.arg("-c");
-            cmd.arg(&command);
-            cmd.stdin(Stdio::piped());
-            cmd.stdout(Stdio::piped());
-            cmd.stderr(Stdio::piped());
-            cmd.env("TERM", "xterm-256color");
+        use tokio::io::AsyncBufReadExt;
 
-            let mut child = cmd
-                .spawn()
-                .map_err(|e| format!("Failed to spawn command: {}", e))?;
+        let mut cmd = shell_command(&command);
+        cmd.stdin(Stdio::piped());
+        cmd.stdout(Stdio::piped());
+        cmd.stderr(Stdio::piped());
+        cmd.kill_on_drop(true);
 
-            let stdin = child.stdin.take().ok_or("Failed to get stdin")?;
-            let stdout = child.stdout.take().ok_or("Failed to get stdout")?;
-            let stderr = child.stderr.take().ok_or("Failed to get stderr")?;
+        let mut child = cmd
+            .spawn()
+            .map_err(|e| format!("Failed to spawn command: {e}"))?;
 
-            self.stdin = Some(stdin);
-            self.stdout = Some(BufReader::new(stdout));
-            self.stderr = Some(BufReader::new(stderr));
-            self.child = Some(child);
+        let stdin = child.stdin.take().ok_or("Failed to get stdin")?;
+        let stdout = child.stdout.take().ok_or("Failed to get stdout")?;
+        let stderr = child.stderr.take().ok_or("Failed to get stderr")?;
 
-            // Spawn tasks to read stdout and stderr
-            let stdout_reader = self.stdout.take().unwrap();
-            let stderr_reader = self.stderr.take().unwrap();
-            let output_tx_stdout = output_tx.clone();
-            let output_tx_stderr = output_tx.clone();
+        self.stdin = Some(stdin);
+        self.stdout = Some(BufReader::new(stdout));
+        self.stderr = Some(BufReader::new(stderr));
+        self.child = Some(child);
 
-            tokio::spawn(async move {
-                let mut reader = stdout_reader;
-                let mut line = String::new();
-                loop {
-                    line.clear();
-                    match reader.read_line(&mut line).await {
-                        Ok(0) => break, // EOF
-                        Ok(_) => {
-                            let is_password = line.contains("password") 
-                                || line.contains("Password") 
-                                || line.contains("[sudo]");
-                            let _ = output_tx_stdout.send(TerminalOutput {
-                                content: line.clone(),
-                                is_error: false,
-                                is_password_prompt: is_password,
-                            });
-                        }
-                        Err(_) => break,
+        let stdout_reader = self.stdout.take().unwrap();
+        let stderr_reader = self.stderr.take().unwrap();
+        let output_tx_stdout = output_tx.clone();
+        let output_tx_stderr = output_tx;
+
+        tokio::spawn(async move {
+            let mut reader = stdout_reader;
+            let mut line = String::new();
+            loop {
+                line.clear();
+                match reader.read_line(&mut line).await {
+                    Ok(0) => break,
+                    Ok(_) => {
+                        let is_password = line.contains("password")
+                            || line.contains("Password")
+                            || line.contains("[sudo]");
+                        let _ = output_tx_stdout.send(TerminalOutput {
+                            content: line.clone(),
+                            is_error: false,
+                            is_password_prompt: is_password,
+                        });
                     }
+                    Err(_) => break,
                 }
-            });
+            }
+        });
 
-            tokio::spawn(async move {
-                let mut reader = stderr_reader;
-                let mut line = String::new();
-                loop {
-                    line.clear();
-                    match reader.read_line(&mut line).await {
-                        Ok(0) => break,
-                        Ok(_) => {
-                            let is_password = line.contains("password") 
-                                || line.contains("Password") 
-                                || line.contains("[sudo]");
-                            let _ = output_tx_stderr.send(TerminalOutput {
-                                content: line.clone(),
-                                is_error: true,
-                                is_password_prompt: is_password,
-                            });
-                        }
-                        Err(_) => break,
+        tokio::spawn(async move {
+            let mut reader = stderr_reader;
+            let mut line = String::new();
+            loop {
+                line.clear();
+                match reader.read_line(&mut line).await {
+                    Ok(0) => break,
+                    Ok(_) => {
+                        let is_password = line.contains("password")
+                            || line.contains("Password")
+                            || line.contains("[sudo]");
+                        let _ = output_tx_stderr.send(TerminalOutput {
+                            content: line.clone(),
+                            is_error: true,
+                            is_password_prompt: is_password,
+                        });
                     }
+                    Err(_) => break,
                 }
-            });
+            }
+        });
 
-            Ok(())
-        }
-
-        #[cfg(target_os = "windows")]
-        {
-            use tokio::io::AsyncBufReadExt;
-            use tokio::process::Command;
-            let mut cmd = Command::new("powershell");
-            cmd.arg("-Command");
-            cmd.arg(&command);
-            cmd.stdin(Stdio::piped());
-            cmd.stdout(Stdio::piped());
-            cmd.stderr(Stdio::piped());
-
-            let mut child = cmd
-                .spawn()
-                .map_err(|e| format!("Failed to spawn command: {}", e))?;
-
-            let stdin = child.stdin.take().ok_or("Failed to get stdin")?;
-            let stdout = child.stdout.take().ok_or("Failed to get stdout")?;
-            let stderr = child.stderr.take().ok_or("Failed to get stderr")?;
-
-            self.stdin = Some(stdin);
-            self.stdout = Some(BufReader::new(stdout));
-            self.stderr = Some(BufReader::new(stderr));
-            self.child = Some(child);
-
-            // Similar stdout/stderr reading for Windows
-            let stdout_reader = self.stdout.take().unwrap();
-            let stderr_reader = self.stderr.take().unwrap();
-            let output_tx_stdout = output_tx.clone();
-            let output_tx_stderr = output_tx.clone();
-
-            tokio::spawn(async move {
-                let mut reader = stdout_reader;
-                let mut line = String::new();
-                loop {
-                    line.clear();
-                    match reader.read_line(&mut line).await {
-                        Ok(0) => break,
-                        Ok(_) => {
-                            let _ = output_tx_stdout.send(TerminalOutput {
-                                content: line.clone(),
-                                is_error: false,
-                                is_password_prompt: false,
-                            });
-                        }
-                        Err(_) => break,
-                    }
-                }
-            });
-
-            tokio::spawn(async move {
-                let mut reader = stderr_reader;
-                let mut line = String::new();
-                loop {
-                    line.clear();
-                    match reader.read_line(&mut line).await {
-                        Ok(0) => break,
-                        Ok(_) => {
-                            let _ = output_tx_stderr.send(TerminalOutput {
-                                content: line.clone(),
-                                is_error: true,
-                                is_password_prompt: false,
-                            });
-                        }
-                        Err(_) => break,
-                    }
-                }
-            });
-
-            Ok(())
-        }
-
-        #[cfg(target_os = "macos")]
-        {
-            use tokio::io::AsyncBufReadExt;
-            use tokio::process::Command;
-            // Similar to Linux
-            let mut cmd = Command::new("sh");
-            cmd.arg("-c");
-            cmd.arg(&command);
-            cmd.stdin(Stdio::piped());
-            cmd.stdout(Stdio::piped());
-            cmd.stderr(Stdio::piped());
-            cmd.env("TERM", "xterm-256color");
-
-            let mut child = cmd
-                .spawn()
-                .map_err(|e| format!("Failed to spawn command: {}", e))?;
-
-            let stdin = child.stdin.take().ok_or("Failed to get stdin")?;
-            let stdout = child.stdout.take().ok_or("Failed to get stdout")?;
-            let stderr = child.stderr.take().ok_or("Failed to get stderr")?;
-
-            self.stdin = Some(stdin);
-            self.stdout = Some(BufReader::new(stdout));
-            self.stderr = Some(BufReader::new(stderr));
-            self.child = Some(child);
-
-            let stdout_reader = self.stdout.take().unwrap();
-            let stderr_reader = self.stderr.take().unwrap();
-            let output_tx_stdout = output_tx.clone();
-            let output_tx_stderr = output_tx.clone();
-
-            tokio::spawn(async move {
-                let mut reader = stdout_reader;
-                let mut line = String::new();
-                loop {
-                    line.clear();
-                    match reader.read_line(&mut line).await {
-                        Ok(0) => break,
-                        Ok(_) => {
-                            let is_password = line.contains("password") 
-                                || line.contains("Password") 
-                                || line.contains("[sudo]");
-                            let _ = output_tx_stdout.send(TerminalOutput {
-                                content: line.clone(),
-                                is_error: false,
-                                is_password_prompt: is_password,
-                            });
-                        }
-                        Err(_) => break,
-                    }
-                }
-            });
-
-            tokio::spawn(async move {
-                let mut reader = stderr_reader;
-                let mut line = String::new();
-                loop {
-                    line.clear();
-                    match reader.read_line(&mut line).await {
-                        Ok(0) => break,
-                        Ok(_) => {
-                            let is_password = line.contains("password") 
-                                || line.contains("Password") 
-                                || line.contains("[sudo]");
-                            let _ = output_tx_stderr.send(TerminalOutput {
-                                content: line.clone(),
-                                is_error: true,
-                                is_password_prompt: is_password,
-                            });
-                        }
-                        Err(_) => break,
-                    }
-                }
-            });
-
-            Ok(())
-        }
-
-        #[cfg(not(any(target_os = "linux", target_os = "windows", target_os = "macos")))]
-        {
-            Err("Unsupported operating system".to_string())
-        }
+        Ok(())
     }
 
     pub async fn write_input(&mut self, input: String) -> Result<(), String> {
@@ -271,15 +112,15 @@ impl TerminalExecutor {
             stdin
                 .write_all(input.as_bytes())
                 .await
-                .map_err(|e| format!("Failed to write to stdin: {}", e))?;
+                .map_err(|e| format!("Failed to write to stdin: {e}"))?;
             stdin
                 .write_all(b"\n")
                 .await
-                .map_err(|e| format!("Failed to write newline: {}", e))?;
+                .map_err(|e| format!("Failed to write newline: {e}"))?;
             stdin
                 .flush()
                 .await
-                .map_err(|e| format!("Failed to flush stdin: {}", e))?;
+                .map_err(|e| format!("Failed to flush stdin: {e}"))?;
             Ok(())
         } else {
             Err("No active command".to_string())
@@ -291,7 +132,7 @@ impl TerminalExecutor {
             let status = child
                 .wait()
                 .await
-                .map_err(|e| format!("Failed to wait for process: {}", e))?;
+                .map_err(|e| format!("Failed to wait for process: {e}"))?;
             Ok(status.code().unwrap_or(-1))
         } else {
             Err("No active command".to_string())
@@ -302,4 +143,3 @@ impl TerminalExecutor {
         self.child.is_some()
     }
 }
-
