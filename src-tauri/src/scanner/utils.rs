@@ -62,22 +62,22 @@ pub fn calculate_security_score(
 pub fn get_system_info() -> SystemInfo {
     #[cfg(target_os = "linux")]
     {
-        use std::process::Command;
-        let os = Command::new("uname")
+        use crate::command::program;
+        let os = program("uname")
             .arg("-o")
             .output()
             .ok()
             .and_then(|o| str::from_utf8(&o.stdout).ok().map(|s| s.trim().to_string()))
             .unwrap_or_else(|| "Linux".to_string());
 
-        let kernel = Command::new("uname")
+        let kernel = program("uname")
             .arg("-r")
             .output()
             .ok()
             .and_then(|o| str::from_utf8(&o.stdout).ok().map(|s| s.trim().to_string()))
             .unwrap_or_else(|| "Unknown".to_string());
 
-        let hostname = Command::new("hostname")
+        let hostname = program("hostname")
             .output()
             .ok()
             .and_then(|o| str::from_utf8(&o.stdout).ok().map(|s| s.trim().to_string()))
@@ -92,23 +92,20 @@ pub fn get_system_info() -> SystemInfo {
 
     #[cfg(target_os = "windows")]
     {
-        use std::process::Command;
-        let os = Command::new("cmd")
-            .args(["/C", "ver"])
+        use crate::command::shell_sync;
+        let os = shell_sync("ver")
             .output()
             .ok()
             .and_then(|o| str::from_utf8(&o.stdout).ok().map(|s| s.trim().to_string()))
             .unwrap_or_else(|| "Windows".to_string());
 
-        let kernel = Command::new("cmd")
-            .args(["/C", "systeminfo | findstr /B /C:\"OS Version\""])
+        let kernel = shell_sync("systeminfo | findstr /B /C:\"OS Version\"")
             .output()
             .ok()
             .and_then(|o| str::from_utf8(&o.stdout).ok().map(|s| s.trim().to_string()))
             .unwrap_or_else(|| "Unknown".to_string());
 
-        let hostname = Command::new("cmd")
-            .args(["/C", "hostname"])
+        let hostname = shell_sync("hostname")
             .output()
             .ok()
             .and_then(|o| str::from_utf8(&o.stdout).ok().map(|s| s.trim().to_string()))
@@ -123,22 +120,22 @@ pub fn get_system_info() -> SystemInfo {
 
     #[cfg(target_os = "macos")]
     {
-        use std::process::Command;
-        let os = Command::new("sw_vers")
+        use crate::command::program;
+        let os = program("sw_vers")
             .arg("-productName")
             .output()
             .ok()
             .and_then(|o| str::from_utf8(&o.stdout).ok().map(|s| s.trim().to_string()))
             .unwrap_or_else(|| "macOS".to_string());
 
-        let kernel = Command::new("uname")
+        let kernel = program("uname")
             .arg("-r")
             .output()
             .ok()
             .and_then(|o| str::from_utf8(&o.stdout).ok().map(|s| s.trim().to_string()))
             .unwrap_or_else(|| "Unknown".to_string());
 
-        let hostname = Command::new("hostname")
+        let hostname = program("hostname")
             .output()
             .ok()
             .and_then(|o| str::from_utf8(&o.stdout).ok().map(|s| s.trim().to_string()))

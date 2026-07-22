@@ -1,7 +1,7 @@
 use crate::commands::Vulnerability;
 use crate::scanner::checks::{make_vuln, vulns_from_software_line};
 use std::path::Path;
-use std::process::Command;
+use crate::command::{program, shell_sync};
 use std::str;
 
 const TARGET: &str = "Local System";
@@ -35,7 +35,7 @@ async fn check_software_versions() -> Vec<Vulnerability> {
         ];
 
         for (product, args) in probes {
-            if let Ok(output) = Command::new(args[0]).args(&args[1..]).output() {
+            if let Ok(output) = program(args[0]).args(&args[1..]).output() {
                 let stdout = str::from_utf8(&output.stdout).unwrap_or("");
                 let stderr = str::from_utf8(&output.stderr).unwrap_or("");
                 let line = if !stderr.is_empty() { stderr } else { stdout };
@@ -45,12 +45,12 @@ async fn check_software_versions() -> Vec<Vulnerability> {
             }
         }
 
-        if let Ok(output) = Command::new("polkitd").arg("--version").output() {
+        if let Ok(output) = program("polkitd").arg("--version").output() {
             let line = str::from_utf8(&output.stdout).unwrap_or("");
             if !line.is_empty() {
                 vulns.extend(vulns_from_software_line(line.trim(), "polkit", TARGET));
             }
-        } else if let Ok(output) = Command::new("pkexec").arg("--version").output() {
+        } else if let Ok(output) = program("pkexec").arg("--version").output() {
             let line = str::from_utf8(&output.stdout).unwrap_or("");
             if !line.is_empty() {
                 vulns.extend(vulns_from_software_line(line.trim(), "polkit", TARGET));
@@ -71,9 +71,9 @@ async fn check_suid_binaries() -> Vec<Vulnerability> {
             "lua", "gcc", "cp", "mv", "less", "more", "awk", "nohup",
         ];
 
-        if let Ok(output) = Command::new("sh")
-            .arg("-c")
-            .arg("find /usr /bin /sbin -perm -4000 -type f 2>/dev/null | head -80")
+        if let Ok(output) = shell_sync(
+            "find /usr /bin /sbin -perm -4000 -type f 2>/dev/null | head -80",
+        )
             .output()
         {
             if let Ok(stdout) = str::from_utf8(&output.stdout) {
@@ -185,7 +185,7 @@ async fn check_selinux_apparmor() -> Vec<Vulnerability> {
 
     #[cfg(target_os = "linux")]
     {
-        if let Ok(output) = Command::new("getenforce").output() {
+        if let Ok(output) = program("getenforce").output() {
             if let Ok(stdout) = str::from_utf8(&output.stdout) {
                 if stdout.trim().eq_ignore_ascii_case("Disabled") {
                     vulns.push(make_vuln(
@@ -200,7 +200,7 @@ async fn check_selinux_apparmor() -> Vec<Vulnerability> {
             }
         }
 
-        if let Ok(output) = Command::new("aa-status").arg("--enabled").output() {
+        if let Ok(output) = program("aa-status").arg("--enabled").output() {
             if let Ok(stdout) = str::from_utf8(&output.stdout) {
                 if stdout.contains("no") {
                     vulns.push(make_vuln(
@@ -224,7 +224,7 @@ async fn check_fail2ban() -> Vec<Vulnerability> {
 
     #[cfg(target_os = "linux")]
     {
-        if let Ok(output) = Command::new("systemctl")
+        if let Ok(output) = program("systemctl")
             .args(["is-active", "fail2ban"])
             .output()
         {
@@ -279,7 +279,7 @@ async fn check_sudo_nopasswd() -> Vec<Vulnerability> {
 
     #[cfg(unix)]
     {
-        if let Ok(output) = Command::new("sudo").args(["-n", "true"]).output() {
+        if let Ok(output) = program("sudo").args(["-n", "true"]).output() {
             if output.status.success() {
                 vulns.push(make_vuln(
                     "Passwordless sudo for current user",
@@ -301,7 +301,7 @@ async fn check_empty_password_accounts() -> Vec<Vulnerability> {
 
     #[cfg(target_os = "linux")]
     {
-        if let Ok(output) = Command::new("awk").args([
+        if let Ok(output) = program("awk").args([
             "-F:",
             "($2 == \"\" ) { print $1 }",
             "/etc/shadow",

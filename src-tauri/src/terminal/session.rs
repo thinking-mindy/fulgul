@@ -1,6 +1,5 @@
-use super::runner::shell_command;
+use crate::command::shell_async;
 use std::collections::HashMap;
-use std::process::Stdio;
 use std::sync::Arc;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::Child;
@@ -34,11 +33,7 @@ fn new_session_id() -> String {
 pub async fn start_session(command: String, final_command: String) -> Result<String, String> {
     let session_id = new_session_id();
 
-    let mut cmd = shell_command(&final_command);
-    cmd.stdin(Stdio::piped());
-    cmd.stdout(Stdio::piped());
-    cmd.stderr(Stdio::piped());
-    cmd.kill_on_drop(true);
+    let mut cmd = shell_async(&final_command);
 
     let mut child = cmd
         .spawn()

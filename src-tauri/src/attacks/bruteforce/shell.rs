@@ -1,8 +1,8 @@
-use crate::terminal::runner;
+use crate::command::run_shell;
 
 /// Run a shell command with a hard timeout. Never blocks indefinitely.
 pub async fn run_timed_shell(command: &str, timeout_secs: u64) -> Result<String, String> {
-    runner::run_command(command, timeout_secs).await
+    run_shell(command, timeout_secs).await
 }
 
 pub async fn command_exists(bin: &str) -> bool {

@@ -1,4 +1,5 @@
 use crate::commands::{ScanResult, Vulnerability};
+use crate::command::{program, powershell_sync};
 use crate::scanner::checks::{generate_scan_id, make_vuln, vulns_from_open_ports};
 use crate::scanner::local_extra::run_extended_local_checks;
 use crate::scanner::probes::probe_open_ports;
@@ -63,9 +64,9 @@ async fn check_outdated_packages() -> Vec<Vulnerability> {
 
     #[cfg(target_os = "linux")]
     {
-        use std::process::Command;
+        
         // Check for outdated packages on Debian/Ubuntu
-        if let Ok(output) = Command::new("apt")
+        if let Ok(output) = program("apt")
             .args(["list", "--upgradable"])
             .output()
         {
@@ -87,7 +88,7 @@ async fn check_outdated_packages() -> Vec<Vulnerability> {
         }
 
         // Check for Arch Linux
-        if let Ok(output) = Command::new("pacman")
+        if let Ok(output) = program("pacman")
             .args(["-Qu"])
             .output()
         {
@@ -111,9 +112,9 @@ async fn check_outdated_packages() -> Vec<Vulnerability> {
 
     #[cfg(target_os = "windows")]
     {
-        use std::process::Command;
+        
         // Check with winget
-        if let Ok(output) = Command::new("winget")
+        if let Ok(output) = program("winget")
             .args(["upgrade", "--list"])
             .output()
         {
@@ -137,9 +138,9 @@ async fn check_outdated_packages() -> Vec<Vulnerability> {
 
     #[cfg(target_os = "macos")]
     {
-        use std::process::Command;
+        
         // Check with Homebrew
-        if let Ok(output) = Command::new("brew")
+        if let Ok(output) = program("brew")
             .args(["outdated"])
             .output()
         {
@@ -223,9 +224,9 @@ async fn check_firewall_status() -> Vec<Vulnerability> {
 
     #[cfg(target_os = "linux")]
     {
-        use std::process::Command;
+        
         // Check UFW
-        if let Ok(output) = Command::new("ufw")
+        if let Ok(output) = program("ufw")
             .arg("status")
             .output()
         {
@@ -246,7 +247,7 @@ async fn check_firewall_status() -> Vec<Vulnerability> {
         }
 
         // Check firewalld
-        if let Ok(output) = Command::new("firewall-cmd")
+        if let Ok(output) = program("firewall-cmd")
             .arg("--state")
             .output()
         {
@@ -269,10 +270,11 @@ async fn check_firewall_status() -> Vec<Vulnerability> {
 
     #[cfg(target_os = "windows")]
     {
-        use std::process::Command;
+        
         // Check Windows Firewall
-        if let Ok(output) = Command::new("powershell")
-            .args(["-Command", "Get-NetFirewallProfile | Select-Object -ExpandProperty Enabled"])
+        if let Ok(output) = powershell_sync(
+            "Get-NetFirewallProfile | Select-Object -ExpandProperty Enabled",
+        )
             .output()
         {
             if let Ok(stdout) = str::from_utf8(&output.stdout) {
@@ -294,9 +296,9 @@ async fn check_firewall_status() -> Vec<Vulnerability> {
 
     #[cfg(target_os = "macos")]
     {
-        use std::process::Command;
+        
         // Check pfctl (macOS firewall)
-        if let Ok(output) = Command::new("defaults")
+        if let Ok(output) = program("defaults")
             .args(["read", "/Library/Preferences/com.apple.alf", "globalstate"])
             .output()
         {
@@ -325,9 +327,9 @@ async fn get_open_ports() -> Result<Vec<u16>, String> {
 
     #[cfg(target_os = "linux")]
     {
-        use std::process::Command;
+        
         // Use ss command
-        if let Ok(output) = Command::new("ss")
+        if let Ok(output) = program("ss")
             .args(["-tuln"])
             .output()
         {
@@ -347,9 +349,9 @@ async fn get_open_ports() -> Result<Vec<u16>, String> {
 
     #[cfg(target_os = "windows")]
     {
-        use std::process::Command;
+        
         // Use netstat
-        if let Ok(output) = Command::new("netstat")
+        if let Ok(output) = program("netstat")
             .args(["-ano"])
             .output()
         {
@@ -372,9 +374,9 @@ async fn get_open_ports() -> Result<Vec<u16>, String> {
 
     #[cfg(target_os = "macos")]
     {
-        use std::process::Command;
+        
         // Use lsof
-        if let Ok(output) = Command::new("lsof")
+        if let Ok(output) = program("lsof")
             .args(["-i", "-P", "-n"])
             .output()
         {
@@ -456,8 +458,8 @@ async fn get_running_services() -> Vec<String> {
 
     #[cfg(target_os = "linux")]
     {
-        use std::process::Command;
-        if let Ok(output) = Command::new("systemctl")
+        
+        if let Ok(output) = program("systemctl")
             .args(["--type=service", "--state=running", "--no-pager", "--no-legend"])
             .output()
         {
@@ -473,9 +475,10 @@ async fn get_running_services() -> Vec<String> {
 
     #[cfg(target_os = "windows")]
     {
-        use std::process::Command;
-        if let Ok(output) = Command::new("powershell")
-            .args(["-Command", "Get-Service | Where-Object {$_.Status -eq 'Running'} | Select-Object -ExpandProperty Name"])
+        
+        if let Ok(output) = powershell_sync(
+            "Get-Service | Where-Object {$_.Status -eq 'Running'} | Select-Object -ExpandProperty Name",
+        )
             .output()
         {
             if let Ok(stdout) = str::from_utf8(&output.stdout) {
@@ -491,8 +494,8 @@ async fn get_running_services() -> Vec<String> {
 
     #[cfg(target_os = "macos")]
     {
-        use std::process::Command;
-        if let Ok(output) = Command::new("launchctl")
+        
+        if let Ok(output) = program("launchctl")
             .args(["list"])
             .output()
         {

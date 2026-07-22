@@ -1,4 +1,4 @@
-use super::runner::shell_command;
+use crate::command::shell_async;
 use serde::{Deserialize, Serialize};
 use std::process::Stdio;
 use tokio::io::{AsyncWriteExt, BufReader};
@@ -36,7 +36,7 @@ impl TerminalExecutor {
     ) -> Result<(), String> {
         use tokio::io::AsyncBufReadExt;
 
-        let mut cmd = shell_command(&command);
+        let mut cmd = shell_async(&command);
         cmd.stdin(Stdio::piped());
         cmd.stdout(Stdio::piped());
         cmd.stderr(Stdio::piped());

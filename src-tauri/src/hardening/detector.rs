@@ -1,5 +1,5 @@
 use crate::hardening::tasks::HardeningTask;
-use std::process::Command;
+use crate::command::{program, powershell_sync};
 
 pub fn detect_os() -> String {
     if cfg!(target_os = "linux") {
@@ -35,7 +35,7 @@ async fn check_linux_task(task: &HardeningTask) -> String {
         "ssh" => {
             if task.name.contains("Root SSH") {
                 // Check if PermitRootLogin is set to no
-                let output = Command::new("grep")
+                let output = program("grep")
                     .arg("PermitRootLogin")
                     .arg("/etc/ssh/sshd_config")
                     .output()
@@ -50,7 +50,7 @@ async fn check_linux_task(task: &HardeningTask) -> String {
                 "pending".to_string()
             } else if task.name.contains("Harden SSH") {
                 // Check SSH config
-                let output = Command::new("grep")
+                let output = program("grep")
                     .arg("PasswordAuthentication")
                     .arg("/etc/ssh/sshd_config")
                     .output()
@@ -69,7 +69,7 @@ async fn check_linux_task(task: &HardeningTask) -> String {
         }
         "firewall" => {
             // Check if UFW is enabled
-            let output = Command::new("ufw")
+            let output = program("ufw")
                 .arg("status")
                 .output()
                 .ok();
@@ -84,7 +84,7 @@ async fn check_linux_task(task: &HardeningTask) -> String {
         }
         "updates" => {
             // Check if unattended-upgrades is installed
-            let output = Command::new("dpkg")
+            let output = program("dpkg")
                 .arg("-l")
                 .arg("unattended-upgrades")
                 .output()
@@ -100,7 +100,7 @@ async fn check_linux_task(task: &HardeningTask) -> String {
         }
         "intrusion-detection" => {
             // Check if fail2ban is running
-            let output = Command::new("systemctl")
+            let output = program("systemctl")
                 .arg("is-active")
                 .arg("fail2ban")
                 .output()
@@ -122,9 +122,9 @@ async fn check_windows_task(task: &HardeningTask) -> String {
     match task.category.as_str() {
         "firewall" => {
             // Check Windows Firewall status using PowerShell
-            let output = Command::new("powershell")
-                .arg("-Command")
-                .arg("Get-NetFirewallProfile | Select-Object -ExpandProperty Enabled")
+            let output = powershell_sync(
+                "Get-NetFirewallProfile | Select-Object -ExpandProperty Enabled",
+            )
                 .output()
                 .ok();
             
@@ -138,9 +138,9 @@ async fn check_windows_task(task: &HardeningTask) -> String {
         }
         "antivirus" => {
             // Check Windows Defender status
-            let output = Command::new("powershell")
-                .arg("-Command")
-                .arg("Get-MpComputerStatus | Select-Object -ExpandProperty RealTimeProtectionEnabled")
+            let output = powershell_sync(
+                "Get-MpComputerStatus | Select-Object -ExpandProperty RealTimeProtectionEnabled",
+            )
                 .output()
                 .ok();
             
@@ -154,7 +154,7 @@ async fn check_windows_task(task: &HardeningTask) -> String {
         }
         "encryption" => {
             // Check BitLocker status
-            let output = Command::new("manage-bde")
+            let output = program("manage-bde")
                 .arg("-status")
                 .arg("C:")
                 .output()
@@ -176,7 +176,7 @@ async fn check_macos_task(task: &HardeningTask) -> String {
     match task.category.as_str() {
         "encryption" => {
             // Check FileVault status
-            let output = Command::new("fdesetup")
+            let output = program("fdesetup")
                 .arg("status")
                 .output()
                 .ok();
@@ -191,7 +191,7 @@ async fn check_macos_task(task: &HardeningTask) -> String {
         }
         "firewall" => {
             // Check macOS firewall status
-            let output = Command::new("/usr/libexec/ApplicationFirewall/socketfilterfw")
+            let output = program("/usr/libexec/ApplicationFirewall/socketfilterfw")
                 .arg("--getglobalstate")
                 .output()
                 .ok();
@@ -207,7 +207,7 @@ async fn check_macos_task(task: &HardeningTask) -> String {
         "access-control" => {
             if task.name.contains("Gatekeeper") {
                 // Check Gatekeeper status
-                let output = Command::new("spctl")
+                let output = program("spctl")
                     .arg("--status")
                     .output()
                     .ok();

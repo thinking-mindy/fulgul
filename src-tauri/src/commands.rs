@@ -1298,6 +1298,6 @@ pub async fn get_command_output(session_id: String) -> Result<serde_json::Value,
 
 #[tauri::command]
 pub async fn execute_command_interactive(command: String) -> Result<String, String> {
-    crate::terminal::runner::run_command(&command, 120).await
+    crate::command::run_shell(&command, 120).await
 }
 

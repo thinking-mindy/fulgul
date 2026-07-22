@@ -1,3 +1,4 @@
+mod command;
 mod commands;
 mod scanner;
 mod storage;
@@ -14,6 +15,9 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.set_icon(tauri::include_image!("icons/32x32.png"));
+            }
             let mut sources = Vec::new();
             if let Ok(resource_dir) = app.path().resource_dir() {
                 sources.push(resource_dir.join("wordlists"));

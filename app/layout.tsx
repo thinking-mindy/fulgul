@@ -14,6 +14,10 @@ export const metadata: Metadata = {
   title: 'Fulgul: The Spark — Security Automation',
   description:
     'Simulate attacks, detect vulnerabilities, and automate response — security ops by Thinking Minds',
+  icons: {
+    icon: [{ url: '/icon.png', type: 'image/png' }],
+    shortcut: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({

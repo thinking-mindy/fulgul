@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import {
   Box,
   Drawer,
@@ -216,14 +217,16 @@ export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
       <Box sx={{ px: 2, pt: 2.25, pb: 1.75, borderBottom: '1px solid', borderColor: 'divider' }}>
         <Stack direction="row" alignItems="center" spacing={1.25}>
           <Avatar
+            variant="rounded"
             sx={{
               width: 36,
               height: 36,
-              bgcolor: 'primary.main',
+              bgcolor: 'transparent',
               borderRadius: 2,
+              overflow: 'hidden',
             }}
           >
-            <BoltIcon sx={{ fontSize: 18 }} />
+            <Image src="/icon.png" alt="Fulgul" width={36} height={36} priority />
           </Avatar>
           <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', letterSpacing: '-0.02em' }}>Fulgul</Typography>
         </Stack>

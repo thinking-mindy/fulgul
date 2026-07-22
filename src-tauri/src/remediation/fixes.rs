@@ -171,12 +171,9 @@ pub async fn apply_auto_fix(vuln: &Vulnerability) -> Result<String, String> {
     if let Some(cmd) = fix.command {
         #[cfg(target_os = "linux")]
         {
-            use std::process::Command;
-            let output = Command::new("sh")
-                .arg("-c")
-                .arg(&cmd)
+            let output = crate::command::shell_sync(&cmd)
                 .output()
-                .map_err(|e| format!("Failed to execute fix command: {}", e))?;
+                .map_err(|e| format!("Failed to execute fix command: {e}"))?;
 
             if output.status.success() {
                 return Ok("Fix applied successfully".to_string());
@@ -187,12 +184,13 @@ pub async fn apply_auto_fix(vuln: &Vulnerability) -> Result<String, String> {
         }
         #[cfg(target_os = "windows")]
         {
-            use std::process::Command;
-            let output = Command::new("powershell")
-                .arg("-Command")
-                .arg(&cmd)
-                .output()
-                .map_err(|e| format!("Failed to execute fix command: {}", e))?;
+            let output = if cmd.starts_with("Set-Net") || cmd.starts_with("Get-Net") {
+                crate::command::powershell_sync(&cmd)
+            } else {
+                crate::command::shell_sync(&cmd)
+            }
+            .output()
+            .map_err(|e| format!("Failed to execute fix command: {e}"))?;
 
             if output.status.success() {
                 return Ok("Fix applied successfully".to_string());
@@ -203,12 +201,9 @@ pub async fn apply_auto_fix(vuln: &Vulnerability) -> Result<String, String> {
         }
         #[cfg(target_os = "macos")]
         {
-            use std::process::Command;
-            let output = Command::new("sh")
-                .arg("-c")
-                .arg(&cmd)
+            let output = crate::command::shell_sync(&cmd)
                 .output()
-                .map_err(|e| format!("Failed to execute fix command: {}", e))?;
+                .map_err(|e| format!("Failed to execute fix command: {e}"))?;
 
             if output.status.success() {
                 return Ok("Fix applied successfully".to_string());
